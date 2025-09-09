@@ -343,20 +343,28 @@
      *   measurementId: "G-XXXX"
      * };
      **************************/
-    const firebaseConfig = {
-      apiKey: "REPLACE_ME",
-      authDomain: "REPLACE_ME",
-      projectId: "REPLACE_ME",
-      storageBucket: "REPLACE_ME",
-      messagingSenderId: "REPLACE_ME",
-      appId: "REPLACE_ME",
-      measurementId: "REPLACE_ME"
-    };
+    
+ // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+    authDomain: "unseen-93dd8.firebaseapp.com",
+    projectId: "unseen-93dd8",
+    storageBucket: "unseen-93dd8.firebasestorage.app",
+    messagingSenderId: "142670337449",
+    appId: "1:142670337449:web:118ee30276e2c9ec8060b8",
+    measurementId: "G-14MEQ5F92K"
+  };
     // init
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
     // DOM
     const langToggle = document.getElementById('lang-toggle');
