@@ -985,6 +985,19 @@
     // Fetch stats initially and every minute
     fetchAndRenderStats();
     setInterval(fetchAndRenderStats, 60_000);
+
+                                                             
+    googleAuthBtn.addEventListener('click', async ()=>{
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try{
+    await auth.signInWithPopup(provider);
+    closeModalFn(); // تأكد من إغلاق النافذة
+  }catch(err){ 
+    showToast(texts[currentLang].loginFailed + err.message);
+  }
+});
+
+    
   </script>
 </body>
 </html>
