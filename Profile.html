@@ -127,9 +127,10 @@
         <div class="profile-header">
           <div class="profile-avatar" id="profile-avatar">U</div>
           <div class="profile-info">
-            <h3 id="profile-username">اسم المستخدم</h3>
-            <p id="profile-email">user@example.com</p>
-          </div>
+  <h3 id="profile-username">اسم المستخدم</h3>
+  <p id="profile-name" style="font-weight: 600; margin: 4px 0;"></p>
+  <p id="profile-email">user@example.com</p>
+</div>
         </div>
         <div class="profile-stats">
           <div class="profile-stat">
@@ -189,6 +190,7 @@
     const profileAvatar = document.getElementById('profile-avatar');
     const profileUsername = document.getElementById('profile-username');
     const profileEmail = document.getElementById('profile-email');
+    const profileName = document.getElementById('profile-name');
     const statMessagesCount = document.getElementById('stat-messages-count');
     const statFollowers = document.getElementById('stat-followers');
     const statJoined = document.getElementById('stat-joined');
@@ -203,18 +205,21 @@
       if (user) {
         // Load user profile
         const userDoc = await db.collection('users').doc(user.uid).get();
+    
         if (userDoc.exists) {
-          const userData = userDoc.data();
-          profileUsername.textContent = userData.username || 'مستخدم';
-          profileEmail.textContent = user.email;
-          profileAvatar.textContent = (userData.username || 'U').charAt(0).toUpperCase();
-          
-          // تاريخ الانضمام
-          if (userData.createdAt) {
-            const date = userData.createdAt.toDate();
-            statJoined.textContent = date.getFullYear();
-          }
-        } else {
+  const userData = userDoc.data();
+  profileUsername.textContent = userData.username || 'مستخدم';
+  profileName.textContent = userData.name || ''; // عرض الاسم إذا كان موجودًا
+  profileEmail.textContent = user.email;
+  profileAvatar.textContent = (userData.username || 'U').charAt(0).toUpperCase();
+  
+  // تاريخ الانضمام
+  if (userData.createdAt) {
+    const date = userData.createdAt.toDate();
+    statJoined.textContent = date.getFullYear();
+  }
+} 
+        else {
           // إذا لم يوجد مستند، ننشئه
           await db.collection('users').doc(user.uid).set({
             uid: user.uid,
