@@ -763,7 +763,7 @@
         // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
         if (result.user) {
           closeModalFn();
-          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+          window.location.href = 'Profile.html';
         }
       }catch(err){ 
         showToast(texts[currentLang].loginFailed + err.message);
@@ -819,12 +819,12 @@
           
           // بعد إنشاء الحساب الناجح، توجيه المستخدم إلى صفحة Dashboard
           closeModalFn();
-          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+          window.location.href = 'Profile.html';
         } else {
           await auth.signInWithEmailAndPassword(email, password);
           // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
           closeModalFn();
-          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+          window.location.href = 'Profile.html';
         }
       }catch(err){
         showToast(texts[currentLang].authError + err.message);
@@ -936,7 +936,7 @@
         return;
       }
       // توجيه المستخدم إلى صفحة Dashboard
-      window.location.href = 'deepseek_html_20250911_65b7a8.html';
+      window.location.href = 'Profile.html';
     });
 
     // STATS: حساب بسيط عبر قراءة مجموع المستندات (مناسب للمشاريع الصغيرة)
