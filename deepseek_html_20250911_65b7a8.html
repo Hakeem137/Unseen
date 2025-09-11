@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unseen — لوحة التحكم</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    /* نستخدم نفس الستايل الأساسي من الصفحة الرئيسية */
+    :root{
+      --primary:#5a3fff;
+      --accent:#06b6d4;
+      --muted:#64748b;
+      --bg:#ffffff;
+      --card:rgba(10,11,13,0.04);
+      --radius:14px;
+    }
+    [dir="ltr"]{ --flow:row; }
+    [dir="rtl"]{ --flow:row-reverse; }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:"Cairo", system-ui, -apple-system, "Inter", sans-serif;
+      background:var(--bg);
+      color:#081029;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition:background .25s,color .25s;
+    }
+    body.dark{ --bg:#07102a; background:#07102a; color:#e6eef8; }
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700}
+    .brand h1{margin:0;font-size:1.05rem}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
+    .controls{display:flex;gap:8px;align-items:center}
+    .icon-btn{background:none;border:1px solid transparent;padding:8px;border-radius:10px;cursor:pointer}
+    .icon-btn:hover{transform:translateY(-1px)}
+
+    /* Mobile menu */
+    .hamburger{display:none;background:none;border:none;font-size:22px}
+    .mobile-nav{display:none;position:absolute;right:16px;left:16px;top:72px;background:var(--bg);border-radius:12px;padding:12px;box-shadow:0 6px 24px rgba(8,16,41,0.08);z-index:50}
+
+    /* Back to home */
+    .back-home{display:inline-flex;align-items:center;gap:8px;color:var(--primary);text-decoration:none;font-weight:600;margin-bottom:20px}
+
+    /* Dashboard sections */
+    .dashboard{padding:20px;max-width:1200px;margin:0 auto}
+    .dashboard-section{margin-bottom:30px}
+    .dashboard-section h2{font-size:1.5rem;margin-bottom:16px}
+
+    /* Profile card */
+    .profile-card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(8,16,41,0.04);margin-bottom:20px}
+    .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(90deg,var(--primary),var(--accent));color:white;display:grid;place-items:center;font-weight:700;font-size:2rem}
+    .profile-info h3{margin:0;font-size:1.2rem}
+    .profile-info p{margin:0;color:var(--muted)}
+    .profile-stats{display:flex;gap:16px;margin-top:16px}
+    .profile-stat{text-align:center}
+    .profile-stat strong{display:block;font-size:1.2rem}
+    .profile-stat span{font-size:0.9rem;color:var(--muted)}
+
+    /* Messages list */
+    .messages-list{display:flex;flex-direction:column;gap:12px}
+    .message-card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(8,16,41,0.04)}
+    .message-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .message-sender{font-weight:600}
+    .message-time{font-size:0.9rem;color:var(--muted)}
+    .message-content{margin:0}
+
+    /* Loading spinner */
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* responsive */
+    @media (max-width:900px){
+      header{padding:12px}
+      .hamburger{display:inline-block}
+      nav{display:none}
+      .mobile-nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>U</div>
+      <div>
+        <h1>Unseen</h1>
+        <div class="muted" style="font-size:12px">رسائل مجهولة — خصوصية أولاً</div>
+      </div>
+    </div>
+
+    <nav aria-label="القائمة الرئيسية">
+      <a href="index.html">الرئيسية</a>
+      <a href="#settings">الإعدادات</a>
+    </nav>
+
+    <div class="controls">
+      <button class="icon-btn" id="lang-toggle" title="تبديل اللغة"><span class="material-icons">translate</span></button>
+      <button class="icon-btn" id="theme-toggle" title="تبديل الثيم"><span class="material-icons">dark_mode</span></button>
+      <button class="icon-btn" id="profile-copy" title="انسخ رابط ملفك"><span class="material-icons">link</span></button>
+      <button class="icon-btn" id="signout-btn" title="تسجيل خروج"><span class="material-icons">logout</span></button>
+      <button class="hamburger" id="hamburger" aria-label="قائمة"> <span class="material-icons">menu</span></button>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav" aria-hidden>
+      <a href="index.html">الرئيسية</a><br>
+      <a href="#settings">الإعدادات</a><br>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <a href="index.html" class="back-home"><span class="material-icons">arrow_back</span> العودة للرئيسية</a>
+
+    <section class="dashboard-section" id="profile">
+      <h2>ملفي الشخصي</h2>
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profile-avatar">U</div>
+          <div class="profile-info">
+            <h3 id="profile-username">اسم المستخدم</h3>
+            <p id="profile-email">user@example.com</p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <strong id="stat-messages-count">0</strong>
+            <span>الرسائل</span>
+          </div>
+          <div class="profile-stat">
+            <strong id="stat-followers">0</strong>
+            <span>المتابعون</span>
+          </div>
+          <div class="profile-stat">
+            <strong id="stat-joined">2023</strong>
+            <span>تاريخ الانضمام</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section" id="messages">
+      <h2>الرسائل الواردة</h2>
+      <div class="messages-list" id="messages-list">
+        <div class="message-card">
+          <div class="message-header">
+            <span class="message-sender">مجهول</span>
+            <span class="message-time">منذ 3 دقائق</span>
+          </div>
+          <p class="message-content">هذه رسالة مجهولة من أحد الأصدقاء.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    /**************************
+     * إعداد Firebase هنا (نفس الإعدادات)
+     **************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+      authDomain: "unseen-93dd8.firebaseapp.com",
+      projectId: "unseen-93dd8",
+      storageBucket: "unseen-93dd8.firebasestorage.app",
+      messagingSenderId: "142670337449",
+      appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+      measurementId: "G-SPL7YN9LZ1"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // DOM elements
+    const profileAvatar = document.getElementById('profile-avatar');
+    const profileUsername = document.getElementById('profile-username');
+    const profileEmail = document.getElementById('profile-email');
+    const statMessagesCount = document.getElementById('stat-messages-count');
+    const statFollowers = document.getElementById('stat-followers');
+    const statJoined = document.getElementById('stat-joined');
+    const messagesList = document.getElementById('messages-list');
+    const signoutBtn = document.getElementById('signout-btn');
+    const langToggle = document.getElementById('lang-toggle');
+    const themeToggle = document.getElementById('theme-toggle');
+    const bodyEl = document.body;
+
+    // Check authentication state
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Load user profile
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          profileUsername.textContent = userData.username || 'مستخدم';
+          profileEmail.textContent = user.email;
+          profileAvatar.textContent = (userData.username || 'U').charAt(0).toUpperCase();
+          
+          // تاريخ الانضمام
+          if (userData.createdAt) {
+            const date = userData.createdAt.toDate();
+            statJoined.textContent = date.getFullYear();
+          }
+        } else {
+          // إذا لم يوجد مستند، ننشئه
+          await db.collection('users').doc(user.uid).set({
+            uid: user.uid,
+            username: user.email ? user.email.split('@')[0] : 'user',
+            email: user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+          // إعادة تحميل البيانات
+          location.reload();
+        }
+
+        // Load user's messages
+        const messagesSnapshot = await db.collection('messages')
+          .where('receiverId', '==', user.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        if (!messagesSnapshot.empty) {
+          messagesList.innerHTML = '';
+          messagesSnapshot.forEach(doc => {
+            const message = doc.data();
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message-card';
+            messageElement.innerHTML = `
+              <div class="message-header">
+                <span class="message-sender">مجهول</span>
+                <span class="message-time">${formatTime(message.createdAt)}</span>
+              </div>
+              <p class="message-content">${message.content}</p>
+            `;
+            messagesList.appendChild(messageElement);
+          });
+          statMessagesCount.textContent = messagesSnapshot.size;
+        } else {
+          messagesList.innerHTML = '<p class="muted">لا توجد رسائل حتى الآن.</p>';
+        }
+
+        // Load followers count (افتراضيًا 0)
+        // يمكنك إضافة منطقك الخاص لحساب المتابعين
+        statFollowers.textContent = '0';
+      } else {
+        // إذا لم يكن المستخدم مسجلاً، نعيده إلى الصفحة الرئيسية
+        window.location.href = 'index.html';
+      }
+    });
+
+    // تسجيل الخروج
+    signoutBtn.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    // تبديل اللغة (نفس الكود من index.html)
+    let currentLang = 'ar';
+    langToggle.addEventListener('click', () => {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      // يمكنك إضافة ترجمة للعناصر هنا إذا لزم الأمر
+    });
+
+    // تبديل الثيم (نفس الكود من index.html)
+    themeToggle.addEventListener('click', () => {
+      bodyEl.classList.toggle('dark');
+    });
+
+    // دالة لصياغة الوقت
+    function formatTime(timestamp) {
+      if (!timestamp) return '';
+      const date = timestamp.toDate();
+      const now = new Date();
+      const diff = now - date;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 60) {
+        return `منذ ${minutes} دقيقة`;
+      } else if (hours < 24) {
+        return `منذ ${hours} ساعة`;
+      } else {
+        return `منذ ${days} يوم`;
+      }
+    }
+  </script>
+</body>
+</html>

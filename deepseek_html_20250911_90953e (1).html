@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unseen — الصفحة التعريفية</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#5a3fff;
+      --accent:#06b6d4;
+      --muted:#64748b;
+      --bg:#ffffff;
+      --card:rgba(10,11,13,0.04);
+      --radius:14px;
+    }
+    [dir="ltr"]{ --flow:row; }
+    [dir="rtl"]{ --flow:row-reverse; }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:"Cairo", system-ui, -apple-system, "Inter", sans-serif;
+      background:var(--bg);
+      color:#081029;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition:background .25s,color .25s;
+    }
+    body.dark{ --bg:#07102a; background:#07102a; color:#e6eef8; }
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700}
+    .brand h1{margin:0;font-size:1.05rem}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
+    .controls{display:flex;gap:8px;align-items:center}
+    .icon-btn{background:none;border:1px solid transparent;padding:8px;border-radius:10px;cursor:pointer}
+    .icon-btn:hover{transform:translateY(-1px)}
+
+    /* Mobile menu */
+    .hamburger{display:none;background:none;border:none;font-size:22px}
+    .mobile-nav{display:none;position:absolute;right:16px;left:16px;top:72px;background:var(--bg);border-radius:12px;padding:12px;box-shadow:0 6px 24px rgba(8,16,41,0.08);z-index:50}
+
+    .hero{padding:48px 20px;text-align:center}
+    .hero-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .eyebrow{display:inline-block;background:rgba(90,63,255,0.08);color:var(--primary);padding:6px 10px;border-radius:999px;font-weight:700}
+    .hero h2{font-size:2.1rem;margin:6px 0}
+    .hero p{color:var(--muted);margin:0 0 12px}
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-flex;gap:10px;align-items:center;padding:12px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(8,16,41,0.06);color:inherit}
+
+    .profile-link{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--card);font-weight:600}
+
+    /* Features grid */
+    .features{padding:20px;max-width:1100px;margin:6px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(8,16,41,0.04);transition:transform .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-6px);box-shadow:0 24px 52px rgba(8,16,41,0.06)}
+    .card .material-icons{font-size:28px;color:var(--accent);display:block;margin-bottom:10px}
+    .card h3{margin:0 0 6px;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* Stats */
+    .stats{display:flex;gap:12px;justify-content:center;padding:18px;flex-wrap:wrap}
+    .stat{background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));padding:12px 16px;border-radius:12px;text-align:center;min-width:120px}
+    .stat strong{display:block;font-size:1.4rem}
+    .muted{color:var(--muted)}
+
+    /* Testimonials */
+    .testimonials{padding:18px 20px;max-width:1000px;margin:0 auto}
+    .test-container{position:relative;overflow:hidden;border-radius:12px}
+    .test-list{display:flex;transition:transform .45s ease}
+    .test{min-width:100%;Padding:22px;background:var(--card);display:flex;gap:14px;align-items:flex-start}
+    .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(90deg,var(--primary),var(--accent));color:white;display:grid;place-items:center;font-weight:700}
+
+    /* FAQ */
+    .faq{max-width:900px;margin:18px auto;padding:0 20px}
+    .faq-item{background:var(--card);border-radius:10px;padding:12px;margin-bottom:8px}
+    .faq-item summary{font-weight:700;cursor:pointer}
+    summary::-webkit-details-marker{display:none}
+
+    /* Contact modal */
+    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(2,6,23,0.5);z-index:60}
+    .modal.open{display:grid}
+    .modal-card{background:var(--bg);padding:18px;border-radius:12px;width:380px;max-width:94%}
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    input,textarea{padding:10px;border-radius:8px;border:1px solid rgba(8,16,41,0.06);font-family:inherit}
+
+    /* Auth Modal */
+    .auth-modal-card{background:var(--bg);padding:22px;border-radius:12px;width:360px;max-width:94%;position:relative}
+    .auth-options{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+    .auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;border-radius:10px;border:1px solid rgba(8,16,41,0.08);background:var(--card);cursor:pointer;transition:all 0.2s}
+    .auth-btn:hover{background:rgba(90,63,255,0.06);border-color:var(--primary)}
+    .auth-btn.google{background:#fff;border:1px solid #dadce0}
+    .auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted)}
+    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(8,16,41,0.1)}
+    .auth-footer{text-align:center;margin-top:16px;color:var(--muted);font-size:0.9rem}
+
+    .email-form{display:flex;flex-direction:column;gap:10px}
+    .email-form .small-note{font-size:0.9rem;color:var(--muted);text-align:center}
+    .auth-toggle{background:none;border:none;color:var(--primary);cursor:pointer;font-weight:700}
+
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    .socials{display:flex;gap:10px;justify-content:center;margin-top:8px}
+    .socials a{display:inline-flex;padding:8px;border-radius:10px}
+
+    /* back to top */
+    .back-to-top{position:fixed;left:18px;bottom:18px;border-radius:999px;padding:10px;display:none;z-index:80}
+    .back-to-top.show{display:inline-flex}
+
+    /* Admin Panel */
+    .admin-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:320px;background:var(--bg);z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.1);padding:20px;overflow-y:auto}
+    .admin-panel.open{display:block}
+    .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .admin-section{margin-bottom:20px}
+    .admin-list{list-style:none;padding:0;margin:0}
+    .admin-list li{padding:10px;border-bottom:1px solid rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
+    .admin-actions{display:flex;gap:8px}
+
+    /* Toast notifications */
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:12px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;display:none;align-items:center;gap:10px}
+    .toast.show{display:flex;animation:fadeInUp 0.3s ease}
+    @keyframes fadeInUp{from{opacity:0;transform:translate(-50%,20px)} to{opacity:1;transform:translate(-50%,0)}}
+
+    /* Loading spinner */
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* responsive */
+    @media (max-width:900px){
+      header{padding:12px}
+      .hero h2{font-size:1.6rem}
+      .hamburger{display:inline-block}
+      nav{display:none}
+      .mobile-nav{display:none}
+      .admin-panel{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>U</div>
+      <div>
+        <h1>Unseen</h1>
+        <div class="muted" style="font-size:12px">رسائل مجهولة — خصوصية أولاً</div>
+      </div>
+    </div>
+
+    <nav aria-label="القائمة الرئيسية">
+      <a href="#features">المزايا</a>
+      <a href="#testimonials">آراء</a>
+      <a href="#faq">الأسئلة</a>
+      <a href="#contact" id="contact-link">تواصل</a>
+    </nav>
+
+    <div class="controls">
+      <button class="icon-btn" id="lang-toggle" title="تبديل اللغة"><span class="material-icons">translate</span></button>
+      <button class="icon-btn" id="theme-toggle" title="تبديل الثيم"><span class="material-icons">dark_mode</span></button>
+      <button class="icon-btn" id="profile-copy" title="انسخ رابط ملفك"><span class="material-icons">link</span></button>
+
+      <!-- Firebase auth controls -->
+      <button class="icon-btn" id="auth-btn" title="تسجيل/حساب"><span class="material-icons">person</span></button>
+      <button class="icon-btn" id="signout-btn" title="تسجيل خروج" style="display:none"><span class="material-icons">logout</span></button>
+      
+      <!-- Admin panel toggle (visible only for admins) -->
+      <button class="icon-btn" id="admin-btn" title="لوحة التحكم" style="display:none"><span class="material-icons">admin_panel_settings</span></button>
+
+      <button class="hamburger" id="hamburger" aria-label="قائمة"> <span class="material-icons">menu</span></button>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav" aria-hidden>
+      <a href="#features">المزايا</a><br>
+      <a href="#testimonials">آراء المستخدمين</a><br>
+      <a href="#faq">الأسئلة</a><br>
+      <a href="#contact" id="contact-link-2">تواصل</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <div style="text-align:center">
+          <span class="eyebrow">جديد</span>
+          <h2 id="hero-title">قلها. وأنت غير مرئي.</h2>
+          <p id="hero-subtext">احصل على رسائل مجهولة من أصدقائك — ممتعة، حقيقية، وخاصة دائمًا.</p>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="cta-btn"><span class="material-icons">send</span><span id="cta-text">ابدأ الآن</span></button>
+            <button class="btn btn-ghost" id="open-contact"><span class="material-icons">support_agent</span>تواصل معنا</button>
+            <div class="profile-link" title="رابط ملفك" id="profile-link">unseen.app/u/yourname <button id="copy-btn" class="icon-btn" style="margin-inline-start:6px"><span class="material-icons">content_copy</span></button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" aria-label="إحصاءات">
+      <div class="stat"><span class="muted">رسائل اليوم</span><strong id="stat-messages">1,248</strong></div>
+      <div class="stat"><span class="muted">مستخدمون</span><strong id="stat-users">5,432</strong></div>
+      <div class="stat"><span class="muted">متوسط تقييم</span><strong id="stat-rating">4.8★</strong></div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features" aria-labelledby="features-title">
+      <h2 id="features-title" style="grid-column:1/-1;text-align:center">مزايا Unseen</h2>
+
+      <div class="card">
+        <span class="material-icons">person_add</span>
+        <h3>أنشئ ملفك</h3>
+        <p>حساب سريع وبسيط مع إعدادات خصوصية متقدمة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">link</span>
+        <h3>شارك الرابط</h3>
+        <p>انسخ رابط ملفك أو شاركه مباشرة عبر التطبيقات.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">mail</span>
+        <h3>استقبل رسائل مجهولة</h3>
+        <p>واجهة قراءة آمنة ومريحة، مع فلترة للرسائل المسيئة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">shield</span>
+        <h3>حماية وخصوصية</h3>
+        <p>سياسة خصوصية واضحة وخيارات حظر وإخفاء المتابعين.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">bolt</span>
+        <h3>تحليلات سريعة</h3>
+        <p>مقاييس بسيطة لقياس تفاعل الأصدقاء والرسائل الأكثر شيوعًا.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">autorenew</span>
+        <h3>تصفية ذكية</h3>
+        <p>خوارزمية تمنع الكلمات المسيئة وتوفر تجربة آمنة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">share</span>
+        <h3>نشر آمن</h3>
+        <p>خيارات مشاركة مضمّنة ونصائح لكتابة روابط ذكية.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">settings</span>
+        <h3>تحكم كامل</h3>
+        <p>إعدادات مرنة: من يكتب لك، من يرى ملفك، ومتى يكون رابطك نشطًا.</p>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+      <h2 style="text-align:center">آراء المستخدمين</h2>
+      <div class="test-container" aria-live="polite">
+        <div class="test-list" id="test-list">
+          <div class="test">
+            <div class="avatar">A</div>
+            <div>
+              <strong>أحمد</strong>
+              <p class="muted">"منصة بسيطة وممتعة — أحببت الخصوصية وسهولة المشاركة."</p>
+            </div>
+          </div>
+
+          <div class="test">
+            <div class="avatar">L</div>
+            <div>
+              <strong>ليلى</strong>
+              <p class="muted">"الفلترة ممتازة، وصلتني رسائل جيدة بدون إساءة."</p>
+            </div>
+          </div>
+
+          <div class="test">
+            <div class="avatar">M</div>
+            <div>
+              <strong>محمد</strong>
+              <p class="muted">"التصميم عملي وسهل الاستخدام على الموبايل."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <h2 style="text-align:center">الأسئلة الشائعة</h2>
+      <div class="faq-item">
+        <details>
+          <summary>هل الرسائل فعلاً مجهولة؟</summary>
+          <div class="muted">نعم — نحن لا نشارك الهوية مع صاحب الملف، ويمكن للمستخدم حظر الرسائل المسيئة.</div>
+        </details>
+      </div>
+
+      <div class="faq-item">
+        <details>
+          <summary>كيف أحذف ملفي نهائيًا؟</summary>
+          <div class="muted">من إعدادات الملف اضغط "حذف الحساب"، ستُحذف البيانات بعد تأكيدك.</div>
+        </details>
+      </div>
+
+      <div class="faq-item">
+        <details>
+          <summary>هل يمكنني استرجاع رسالة محذوفة؟</summary>
+          <div class="muted">لا — عند الحذف يتم إزالتها نهائيًا لأسباب تتعلق بالخصوصية.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Contact Modal -->
+    <div class="modal" id="contact-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+        <h3 id="contact-title">تواصل معنا</h3>
+        <form id="contact-form">
+          <div class="form-group">
+            <label for="name">الاسم</label>
+            <input id="name" name="name" placeholder="اسمك" required>
+          </div>
+          <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input id="email" name="email" type="email" placeholder="example@mail.com" required>
+          </div>
+          <div class="form-group">
+            <label for="message">الرسالة</label>
+            <textarea id="message" name="message" rows="4" placeholder="ملاحظتك أو سؤالك" required></textarea>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" id="close-modal">إلغاء</button>
+            <button type="submit" class="btn btn-primary">أرسل</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="auth-modal" aria-hidden="true">
+      <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <h3 id="auth-title">تسجيل الدخول / إنشاء حساب</h3>
+        <div class="auth-options">
+          <button class="auth-btn google" id="google-auth">
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            <span>المتابعة مع جوجل</span>
+          </button>
+
+          <div class="auth-divider">أو</div>
+
+          <!-- Email auth form -->
+          <form id="email-auth-form" class="email-form">
+            <div class="form-group">
+              <label for="email-auth-email">البريد الإلكتروني</label>
+              <input id="email-auth-email" type="email" required placeholder="example@mail.com">
+            </div>
+            <div class="form-group">
+              <label for="email-auth-password">كلمة المرور</label>
+              <input id="email-auth-password" type="password" required placeholder="********">
+            </div>
+            <div class="form-group" id="password-confirm-group" style="display:none">
+              <label for="email-auth-password-confirm">تأكيد كلمة المرور</label>
+              <input id="email-auth-password-confirm" type="password" placeholder="أعد كتابة كلمة المرور">
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <button type="submit" class="btn btn-primary" id="email-auth-submit">تسجيل دخول</button>
+              <button type="button" class="btn btn-ghost" id="toggle-auth-mode">إنشاء حساب</button>
+            </div>
+            <div class="small-note">يمكنك أيضاً المتابعة بحساب جوجل.</div>
+          </form>
+        </div>
+
+        <div class="auth-footer">
+          بالمتابعة، أنت توافق على <a href="#" style="color:var(--primary)">شروط الخدمة</a> و<a href="#" style="color:var(--primary)">سياسة الخصوصية</a>
+        </div>
+
+        <button type="button" class="icon-btn" id="close-auth-modal" style="position:absolute;top:10px;left:10px">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-header">
+        <h3>لوحة التحكم</h3>
+        <button class="icon-btn" id="close-admin-panel"><span class="material-icons">close</span></button>
+      </div>
+      
+      <div class="admin-section">
+        <h4>الرسائل المبلغ عنها</h4>
+        <ul class="admin-list" id="reported-messages">
+          <li>يتم التحميل...</li>
+        </ul>
+      </div>
+      
+      <div class="admin-section">
+        <h4>المستخدمون النشطون</h4>
+        <ul class="admin-list" id="active-users">
+          <li>يتم التحميل...</li>
+        </ul>
+      </div>
+      
+      <div class="admin-section">
+        <h4>إحصائيات النظام</h4>
+        <div class="muted" id="system-stats">يتم التحميل...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div>© 2025 Unseen · جميع الحقوق محفوظة</div>
+    <div class="socials" aria-label="روابط التواصل">
+      <a href="#" aria-label="انستجرام"><span class="material-icons">instagram</span></a>
+      <a href="#" aria-label="تيليجرام"><span class="material-icons">send</span></a>
+      <a href="#" aria-label="تويتر"><span class="material-icons">twitter</span></a>
+    </div>
+  </footer>
+
+  <button class="back-to-top icon-btn" id="back-to-top" aria-label="ارجع لأعلى"><span class="material-icons">arrow_upward</span></button>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- Firebase (compat) SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+  <script>
+    /**************************
+     * إعداد Firebase هنا
+     **************************/
+    const firebaseConfig = {
+    apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+    authDomain: "unseen-93dd8.firebaseapp.com",
+    projectId: "unseen-93dd8",
+    storageBucket: "unseen-93dd8.firebasestorage.app",
+    messagingSenderId: "142670337449",
+    appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+    measurementId: "G-SPL7YN9LZ1"
+  };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const functions = firebase.functions();
+
+    // DOM
+    const langToggle = document.getElementById('lang-toggle');
+    const themeToggle = document.getElementById('theme-toggle');
+    const bodyEl = document.body;
+    const ctaBtn = document.getElementById('cta-btn');
+    const openContact = document.getElementById('open-contact');
+    const contactModal = document.getElementById('contact-modal');
+    const closeModal = document.getElementById('close-modal');
+    const contactForm = document.getElementById('contact-form');
+    const copyBtn = document.getElementById('copy-btn');
+    const profileLinkEl = document.getElementById('profile-link');
+    const authBtn = document.getElementById('auth-btn');
+    const signoutBtn = document.getElementById('signout-btn');
+    const adminBtn = document.getElementById('admin-btn');
+    const adminPanel = document.getElementById('admin-panel');
+    const closeAdminPanel = document.getElementById('close-admin-panel');
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    
+    // Auth modal elements
+    const authModal = document.getElementById('auth-modal');
+    const closeAuthModal = document.getElementById('close-auth-modal');
+    const googleAuthBtn = document.getElementById('google-auth');
+    const emailAuthForm = document.getElementById('email-auth-form');
+    const emailAuthEmail = document.getElementById('email-auth-email');
+    const emailAuthPassword = document.getElementById('email-auth-password');
+    const emailAuthPasswordConfirm = document.getElementById('email-auth-password-confirm');
+    const passwordConfirmGroup = document.getElementById('password-confirm-group');
+    const emailAuthSubmit = document.getElementById('email-auth-submit');
+    const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
+
+    // Texts (Arabic default + English)
+    const texts = {
+      ar:{
+        heroTitle: 'قلها. وأنت غير مرئي.',
+        heroSub: 'احصل على رسائل مجهولة من أصدقائك — ممتعة، حقيقية، وخاصة دائمًا.',
+        cta: 'ابدأ الآن',
+        contact:'تواصل معنا',
+        profileDefault:'unseen.app/u/yourname',
+        authTitle: 'تسجيل الدخول / إنشاء حساب',
+        googleAuth: 'المتابعة مع جوجل',
+        terms: 'بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية',
+        loginText: 'تسجيل دخول',
+        signupText: 'إنشاء حساب',
+        emailPlaceholder: 'example@mail.com',
+        passwordPlaceholder: '********',
+        copied: 'تم نسخ الرابط',
+        copyFailed: 'لم يتم النسخ',
+        messageSent: 'تم إرسال الرسالة — شكرًا لك!',
+        sendError: 'خطأ في الإرسال: ',
+        authError: 'خطأ في المصادقة: ',
+        loginFailed: 'فشل تسجيل الدخول: ',
+        fillRequired: 'املأ الحقول المطلوبة',
+        passwordsMismatch: 'كلمتا المرور غير متطابقتين',
+        setupProfile: 'يمكنك الآن إعداد ملفك ومشاركة الرابط',
+        adminPanel: 'لوحة التحكم',
+        loading: 'جاري التحميل...'
+      },
+      en:{
+        heroTitle: 'Say it. Stay Unseen.',
+        heroSub: 'Get anonymous messages from friends — fun, real, always private.',
+        cta: 'Get Started',
+        contact:'Contact us',
+        profileDefault:'unseen.app/u/yourname',
+        authTitle: 'Sign In / Sign Up',
+        googleAuth: 'Continue with Google',
+        terms: 'By continuing, you agree to our Terms of Service and Privacy Policy',
+        loginText: 'Sign In',
+        signupText: 'Sign Up',
+        emailPlaceholder: 'example@mail.com',
+        passwordPlaceholder: '********',
+        copied: 'Link copied',
+        copyFailed: 'Copy failed',
+        messageSent: 'Message sent — thank you!',
+        sendError: 'Send error: ',
+        authError: 'Auth error: ',
+        loginFailed: 'Login failed: ',
+        fillRequired: 'Please fill required fields',
+        passwordsMismatch: 'Passwords do not match',
+        setupProfile: 'Now you can set up your profile and share the link.',
+        adminPanel: 'Admin Panel',
+        loading: 'Loading...'
+      }
+    };
+
+    // حفظ الإعدادات في localStorage
+    function saveSettings() {
+      localStorage.setItem('language', currentLang);
+      localStorage.setItem('theme', bodyEl.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    // تحميل الإعدادات من localStorage
+    function loadSettings() {
+      const savedLang = localStorage.getItem('language');
+      const savedTheme = localStorage.getItem('theme');
+      
+      if (savedLang) {
+        currentLang = savedLang;
+      }
+      
+      if (savedTheme === 'dark') {
+        bodyEl.classList.add('dark');
+      }
+      
+      applyLang();
+    }
+
+    let currentLang='ar';
+    function applyLang(){
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      const t = texts[currentLang];
+      document.getElementById('hero-title').innerText = t.heroTitle;
+      document.getElementById('hero-subtext').innerText = t.heroSub;
+      document.getElementById('cta-text').innerText = t.cta;
+      document.getElementById('auth-title').innerText = t.authTitle;
+      document.getElementById('google-auth').querySelector('span:last-child').innerText = t.googleAuth;
+      document.querySelector('.auth-footer').innerHTML = t.terms.replace('شروط الخدمة', '<a href="#" style="color:var(--primary)">شروط الخدمة</a>').replace('سياسة الخصوصية', '<a href="#" style="color:var(--primary)">سياسة الخصوصية</a>');
+      profileLinkEl.firstChild.textContent = t.profileDefault + ' ';
+      // placeholders & buttons
+      emailAuthEmail.placeholder = t.emailPlaceholder;
+      emailAuthPassword.placeholder = t.passwordPlaceholder;
+      emailAuthSubmit.textContent = t.loginText;
+      toggleAuthModeBtn.textContent = t.signupText;
+      
+      // حفظ الإعدادات
+      saveSettings();
+    }
+    
+    // إظهار إشعار Toast
+    function showToast(message, duration = 3000) {
+      toastMessage.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // إضافة event listeners للوظائف الأساسية
+    langToggle.addEventListener('click',()=>{
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      applyLang();
+    });
+
+    themeToggle.addEventListener('click',()=>{ 
+      bodyEl.classList.toggle('dark'); 
+      saveSettings();
+    });
+
+    // Mobile nav
+    hamburger.addEventListener('click',()=>{ 
+      mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block'; 
+    });
+
+    // Contact modal
+    let activeModal = null;
+    let focusableElements = [];
+    let firstFocusableElement = null;
+    let lastFocusableElement = null;
+
+    function openModal(modal){ 
+      activeModal = modal;
+      modal.classList.add('open'); 
+      modal.setAttribute('aria-hidden','false');
+      
+      // إدارة التركيز داخل النافذة المنبثقة
+      focusableElements = Array.from(modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+      if (focusableElements.length > 0) {
+        firstFocusableElement = focusableElements[0];
+        lastFocusableElement = focusableElements[focusableElements.length - 1];
+        firstFocusableElement.focus();
+      }
+      
+      // منع التمرير خلف النافذة المنبثقة
+      document.body.style.overflow = 'hidden';
+      
+      // إضافة event listener لإدارة التركيز
+      modal.addEventListener('keydown', trapTabKey);
+    }
+    
+    function closeModalFn(){ 
+      if (activeModal) {
+        activeModal.classList.remove('open'); 
+        activeModal.setAttribute('aria-hidden','true');
+        activeModal.removeEventListener('keydown', trapTabKey);
+        activeModal = null;
+      }
+      
+      // إعادة التمرير
+      document.body.style.overflow = 'auto';
+    }
+    
+    // وظيفة لإدارة التركيز داخل النافذة المنبثقة
+    function trapTabKey(e) {
+      if (e.key !== 'Tab') return;
+      
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusableElement) {
+          e.preventDefault();
+          lastFocusableElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusableElement) {
+          e.preventDefault();
+          firstFocusableElement.focus();
+        }
+      }
+    }
+
+    openContact.addEventListener('click',() => openModal(contactModal));
+    document.getElementById('contact-link').addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      openModal(contactModal);
+    });
+    document.getElementById('contact-link-2').addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      openModal(contactModal);
+    });
+    closeModal.addEventListener('click',closeModalFn);
+    contactModal.addEventListener('click',(e)=>{ 
+      if(e.target === contactModal) closeModalFn(); 
+    });
+    document.addEventListener('keydown',(e)=>{ 
+      if(e.key==='Escape') closeModalFn(); 
+    });
+
+    // Auth modal functions
+    authBtn.addEventListener('click', () => openModal(authModal));
+    closeAuthModal.addEventListener('click', closeModalFn);
+    authModal.addEventListener('click',(e)=>{ 
+      if(e.target === authModal) closeModalFn(); 
+    });
+
+    // Admin panel functions
+    adminBtn.addEventListener('click', () => {
+      adminPanel.classList.add('open');
+      loadAdminData();
+    });
+    
+    closeAdminPanel.addEventListener('click', () => {
+      adminPanel.classList.remove('open');
+    });
+    
+    async function loadAdminData() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      // التحقق من صلاحية المستخدم كمسؤول
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists && userDoc.data().isAdmin) {
+          // تحميل بيانات لوحة التحكم
+          document.getElementById('reported-messages').innerHTML = '<li>' + texts[currentLang].loading + '</li>';
+          document.getElementById('active-users').innerHTML = '<li>' + texts[currentLang].loading + '</li>';
+          document.getElementById('system-stats').textContent = texts[currentLang].loading;
+          
+          // محاكاة تحميل البيانات (يجب استبدالها ببيانات حقيقية)
+          setTimeout(() => {
+            document.getElementById('reported-messages').innerHTML = `
+              <li>
+                <div>رسالة تحتوي على كلمات غير لائقة</div>
+                <div class="admin-actions">
+                  <button class="icon-btn"><span class="material-icons">delete</span></button>
+                  <button class="icon-btn"><span class="material-icons">block</span></button>
+                </div>
+              </li>
+            `;
+            
+            document.getElementById('active-users').innerHTML = `
+              <li>
+                <div>أحمد (user123)</div>
+                <div class="muted">24 رسالة</div>
+              </li>
+              <li>
+                <div>سارة (sara2023)</div>
+                <div class="muted">18 رسالة</div>
+              </li>
+            `;
+            
+            document.getElementById('system-stats').textContent = '542 مستخدم نشط | 1248 رسالة اليوم';
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error loading admin data:', error);
+      }
+    }
+
+    // Auth flows
+    googleAuthBtn.addEventListener('click', async ()=>{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try{
+        const result = await auth.signInWithPopup(provider);
+        // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
+        if (result.user) {
+          closeModalFn();
+          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+        }
+      }catch(err){ 
+        showToast(texts[currentLang].loginFailed + err.message);
+      }
+    });
+
+    // Email sign-in / sign-up
+    let authMode = 'login'; // 'login' or 'signup'
+    function setAuthMode(mode){
+      authMode = mode;
+      if(mode === 'signup'){
+        passwordConfirmGroup.style.display = 'block';
+        emailAuthSubmit.textContent = texts[currentLang].signupText;
+        toggleAuthModeBtn.textContent = texts[currentLang].loginText;
+      } else {
+        passwordConfirmGroup.style.display = 'none';
+        emailAuthSubmit.textContent = texts[currentLang].loginText;
+        toggleAuthModeBtn.textContent = texts[currentLang].signupText;
+      }
+    }
+
+    toggleAuthModeBtn.addEventListener('click', ()=>{
+      setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    });
+
+    emailAuthForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = emailAuthEmail.value.trim();
+      const password = emailAuthPassword.value;
+
+      if(!email || !password){
+        showToast(texts[currentLang].fillRequired);
+        return;
+      }
+
+      try{
+        if(authMode === 'signup'){
+          const passConfirm = emailAuthPasswordConfirm.value;
+          if(password !== passConfirm){
+            showToast(texts[currentLang].passwordsMismatch);
+            return;
+          }
+          const cred = await auth.createUserWithEmailAndPassword(email, password);
+          // create a users doc with a derived username
+          const derived = email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') || ('user'+Math.floor(Math.random()*9000+1000));
+          await db.collection('users').doc(cred.user.uid).set({
+            uid: cred.user.uid,
+            username: derived,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            provider: 'password'
+          }, {merge:true});
+          
+          // بعد إنشاء الحساب الناجح، توجيه المستخدم إلى صفحة Dashboard
+          closeModalFn();
+          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+        } else {
+          await auth.signInWithEmailAndPassword(email, password);
+          // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
+          closeModalFn();
+          window.location.href = 'deepseek_html_20250911_65b7a8.html';
+        }
+      }catch(err){
+        showToast(texts[currentLang].authError + err.message);
+      }
+    });
+
+    signoutBtn.addEventListener('click', async ()=>{
+      await auth.signOut();
+    });
+
+    // On auth state change
+    auth.onAuthStateChanged(async (user)=>{
+      if(user){
+        signoutBtn.style.display = 'inline-flex';
+        authBtn.style.display = 'none';
+        
+        // التحقق مما إذا كان المستخدم مسؤولاً
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists && userDoc.data().isAdmin) {
+            adminBtn.style.display = 'inline-flex';
+          }
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+        }
+        
+        await ensureUserDoc(user);
+        updateProfileLink(user);
+      } else {
+        signoutBtn.style.display = 'none';
+        authBtn.style.display = 'inline-flex';
+        adminBtn.style.display = 'none';
+        // reset link to default
+        applyLang();
+      }
+      // update stats whenever auth state changes
+      fetchAndRenderStats();
+    });
+
+    async function ensureUserDoc(user){
+      const docRef = db.collection('users').doc(user.uid);
+      const doc = await docRef.get();
+      if(!doc.exists){
+        // create a basic user doc; try to derive nice username
+        const derivedName = (user.email) ? user.email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') : ('user'+user.uid.slice(0,6));
+        await docRef.set({
+          uid: user.uid,
+          username: derivedName,
+          email: user.email || null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          provider: user.providerData?.[0]?.providerId || 'anonymous',
+          isAdmin: false // افتراضيًا ليس مسؤولاً
+        });
+      }
+    }
+
+    async function updateProfileLink(user){
+      // try get username from Firestore
+      try{
+        const doc = await db.collection('users').doc(user.uid).get();
+        let username = null;
+        if(doc.exists && doc.data().username) username = doc.data().username;
+        const display = username ? `unseen.app/u/${username}` : `unseen.app/u/${user.uid}`;
+        // put into element
+        profileLinkEl.firstChild.textContent = display + ' ';
+      }catch(e){
+        profileLinkEl.firstChild.textContent = `unseen.app/u/${user.uid} `;
+      }
+    }
+
+    // Copy profile link
+    copyBtn.addEventListener('click', async ()=>{
+      const text = profileLinkEl.firstChild.textContent.trim();
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast(texts[currentLang].copied);
+      }catch(e){
+        showToast(texts[currentLang].copyFailed);
+      }
+    });
+
+    // Contact form saving to Firestore
+    contactForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const user = auth.currentUser;
+      try{
+        await db.collection('contacts').add({
+          name, email, message,
+          senderUid: user ? user.uid : null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast(texts[currentLang].messageSent);
+        closeModalFn();
+        contactForm.reset();
+      }catch(err){
+        showToast(texts[currentLang].sendError + err.message);
+      }
+    });
+
+    // CTA button: لو فيه حساب يوجه المستخدم لإعداد ملفه أو رابط استلام الرسائل
+    ctaBtn.addEventListener('click', async ()=>{
+      const user = auth.currentUser;
+      if(!user){
+        // نطلب تسجيل دخول أولًا
+        openModal(authModal);
+        return;
+      }
+      // توجيه المستخدم إلى صفحة Dashboard
+      window.location.href = 'deepseek_html_20250911_65b7a8.html';
+    });
+
+    // STATS: حساب بسيط عبر قراءة مجموع المستندات (مناسب للمشاريع الصغيرة)
+    async function fetchAndRenderStats(){
+      try{
+        // users count
+        const usersSnap = await db.collection('users').get();
+        const usersCount = usersSnap.size || 0;
+        document.getElementById('stat-users').textContent = usersCount.toLocaleString();
+
+        // messages count (collection "messages" — يعتمد إنك تسجّل رسائل المستخدمين هناك)
+        const messagesSnap = await db.collection('messages').get();
+        const messagesCount = messagesSnap.size || 0;
+        document.getElementById('stat-messages').textContent = messagesCount.toLocaleString();
+
+        // ratings average (collection "ratings" مع حقل value)
+        const ratingsSnap = await db.collection('ratings').get();
+        if(!ratingsSnap.empty){
+          let sum = 0; let cnt = 0;
+          ratingsSnap.forEach(d => { sum += (d.data().value || 0); cnt++; });
+          const avg = (cnt>0) ? (sum / cnt) : 0;
+          document.getElementById('stat-rating').textContent = avg.toFixed(1) + '★';
+        } else {
+          // قيمة افتراضية إذا لا توجد تقييمات
+          document.getElementById('stat-rating').textContent = '4.8★';
+        }
+      }catch(e){
+        console.error('Stats error', e);
+      }
+    }
+
+    // small animation: stat counters (static numbers fallback)
+    function animateNumber(id, end){ const el = document.getElementById(id); let cur = 0; const step = Math.ceil(Math.max(1,end)/40); const iv = setInterval(()=>{ cur += step; if(cur>=end){ el.textContent = end; clearInterval(iv); } else el.textContent = cur.toLocaleString(); },20); }
+    // fallback initial animations (these will be replaced by fetchAndRenderStats when ready)
+    animateNumber('stat-messages',1248); animateNumber('stat-users',5432);
+
+    // simple testimonials slider
+    const testList = document.getElementById('test-list');
+    let tIndex=0;
+    function showTest(i){ testList.style.transform = `translateX(-${i*100}%)`; }
+    setInterval(()=>{ tIndex = (tIndex+1) % testList.children.length; showTest(tIndex); },3500);
+
+    // Back to top visibility
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll',()=>{
+      if(window.scrollY > 300) backToTop.classList.add('show'); else backToTop.classList.remove('show');
+    });
+    backToTop.addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+    // Init
+    loadSettings();
+    // Fetch stats initially and every minute
+    fetchAndRenderStats();
+    setInterval(fetchAndRenderStats, 60_000);
+  </script>
+</body>
+</html>
