@@ -152,15 +152,27 @@
 
 /* ===== CONFIG ===== */
 const SEND_MESSAGE_ENDPOINT = '/api/sendMessage'; // when using Firebase Hosting rewrites this points to functions
-const firebaseConfig = {
-  apiKey: "REPLACE_WITH_YOUR_API_KEY",
-  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID",
-  measurementId: ""
-};
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+    authDomain: "unseen-93dd8.firebaseapp.com",
+    projectId: "unseen-93dd8",
+    storageBucket: "unseen-93dd8.firebasestorage.app",
+    messagingSenderId: "142670337449",
+    appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+    measurementId: "G-SPL7YN9LZ1"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 /* ================== */
 
 const app = firebase.initializeApp(firebaseConfig);
