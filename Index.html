@@ -375,7 +375,10 @@
               <label for="email-auth-password-confirm">تأكيد كلمة المرور</label>
               <input id="email-auth-password-confirm" type="password" placeholder="أعد كتابة كلمة المرور">
             </div>
-
+            <div class="form-group" id="name-group" style="display:none">
+  <label for="email-auth-name">الاسم</label>
+  <input id="email-auth-name" type="text" required placeholder="اسمك">
+</div>
             <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
               <button type="submit" class="btn btn-primary" id="email-auth-submit">تسجيل دخول</button>
               <button type="button" class="btn btn-ghost" id="toggle-auth-mode">إنشاء حساب</button>
@@ -497,7 +500,9 @@
     const passwordConfirmGroup = document.getElementById('password-confirm-group');
     const emailAuthSubmit = document.getElementById('email-auth-submit');
     const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
-
+const emailAuthName = document.getElementById('email-auth-name');
+const nameGroup = document.getElementById('name-group');
+    
     // Texts (Arabic default + English)
     const texts = {
       ar:{
@@ -576,22 +581,23 @@
 
     let currentLang='ar';
     function applyLang(){
-      document.documentElement.lang = currentLang;
-      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-      const t = texts[currentLang];
-      document.getElementById('hero-title').innerText = t.heroTitle;
-      document.getElementById('hero-subtext').innerText = t.heroSub;
-      document.getElementById('cta-text').innerText = t.cta;
-      document.getElementById('auth-title').innerText = t.authTitle;
-      document.getElementById('google-auth').querySelector('span:last-child').innerText = t.googleAuth;
+document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  const t = texts[currentLang];
+  document.getElementById('hero-title').innerText = t.heroTitle;
+  document.getElementById('hero-subtext').innerText = t.heroSub;
+  document.getElementById('cta-text').innerText = t.cta;
+  document.getElementById('auth-title').innerText = t.authTitle;
+  document.getElementById('google-auth').querySelector('span:last-child').innerText = t.googleAuth;
       document.querySelector('.auth-footer').innerHTML = t.terms.replace('شروط الخدمة', '<a href="#" style="color:var(--primary)">شروط الخدمة</a>').replace('سياسة الخصوصية', '<a href="#" style="color:var(--primary)">سياسة الخصوصية</a>');
-      profileLinkEl.firstChild.textContent = t.profileDefault + ' ';
-      // placeholders & buttons
-      emailAuthEmail.placeholder = t.emailPlaceholder;
-      emailAuthPassword.placeholder = t.passwordPlaceholder;
-      emailAuthSubmit.textContent = t.loginText;
-      toggleAuthModeBtn.textContent = t.signupText;
-      
+  profileLinkEl.firstChild.textContent = t.profileDefault + ' ';
+  // placeholders & buttons
+  emailAuthEmail.placeholder = t.emailPlaceholder;
+  emailAuthPassword.placeholder = t.passwordPlaceholder;
+  emailAuthName.placeholder = t.namePlaceholder; // إضافة هذا السطر
+  emailAuthSubmit.textContent = t.loginText;
+  toggleAuthModeBtn.textContent = t.signupText;
+  
       // حفظ الإعدادات
       saveSettings();
     }
@@ -757,33 +763,48 @@
 
     // Auth flows
     googleAuthBtn.addEventListener('click', async ()=>{
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try{
-        const result = await auth.signInWithPopup(provider);
-        // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
-        if (result.user) {
-          closeModalFn();
-          window.location.href = 'Profile.html';
-        }
-      }catch(err){ 
-        showToast(texts[currentLang].loginFailed + err.message);
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try{
+    const result = await auth.signInWithPopup(provider);
+    // بعد تسجيل الدخول الناجح، احفظ بيانات المستخدم
+    const user = result.user;
+    if (user) {
+      const userDocRef = db.collection('users').doc(user.uid);
+      const userDoc = await userDocRef.get();
+      if (!userDoc.exists) {
+        const derived = user.email ? user.email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') : ('user'+user.uid.slice(0,6));
+        await userDocRef.set({
+          uid: user.uid,
+          username: derived,
+          name: user.displayName || '', // حفظ الاسم من جوجل
+          email: user.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          provider: 'google'
+        }, {merge: true});
       }
-    });
-
+ closeModalFn();
+      window.location.href = 'Profile.html';
+    }
+  }catch(err){ 
+    showToast(texts[currentLang].loginFailed + err.message);
+  }
+});
     // Email sign-in / sign-up
     let authMode = 'login'; // 'login' or 'signup'
     function setAuthMode(mode){
-      authMode = mode;
-      if(mode === 'signup'){
-        passwordConfirmGroup.style.display = 'block';
-        emailAuthSubmit.textContent = texts[currentLang].signupText;
-        toggleAuthModeBtn.textContent = texts[currentLang].loginText;
-      } else {
-        passwordConfirmGroup.style.display = 'none';
-        emailAuthSubmit.textContent = texts[currentLang].loginText;
-        toggleAuthModeBtn.textContent = texts[currentLang].signupText;
-      }
-    }
+  authMode = mode;
+  if(mode === 'signup'){
+    passwordConfirmGroup.style.display = 'block';
+    nameGroup.style.display = 'block'; // إظهار حقل الاسم
+    emailAuthSubmit.textContent = texts[currentLang].signupText;
+    toggleAuthModeBtn.textContent = texts[currentLang].loginText;
+  } else {
+    passwordConfirmGroup.style.display = 'none';
+    nameGroup.style.display = 'none'; // إخفاء حقل الاسم
+    emailAuthSubmit.textContent = texts[currentLang].loginText;
+    toggleAuthModeBtn.textContent = texts[currentLang].signupText;
+  }
+}
 
     toggleAuthModeBtn.addEventListener('click', ()=>{
       setAuthMode(authMode === 'login' ? 'signup' : 'login');
@@ -799,27 +820,30 @@
         return;
       }
 
-      try{
-        if(authMode === 'signup'){
-          const passConfirm = emailAuthPasswordConfirm.value;
-          if(password !== passConfirm){
-            showToast(texts[currentLang].passwordsMismatch);
-            return;
-          }
-          const cred = await auth.createUserWithEmailAndPassword(email, password);
-          // create a users doc with a derived username
-          const derived = email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') || ('user'+Math.floor(Math.random()*9000+1000));
-          await db.collection('users').doc(cred.user.uid).set({
-            uid: cred.user.uid,
-            username: derived,
-            email: email,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            provider: 'password'
-          }, {merge:true});
+      try{     
+if(authMode === 'signup'){
+  const name = emailAuthName.value.trim(); // الحصول على الاسم
+  const passConfirm = emailAuthPasswordConfirm.value;
+  if(password !== passConfirm){
+    showToast(texts[currentLang].passwordsMismatch);
+    return;
+  }
+  const cred = await auth.createUserWithEmailAndPassword(email, password);
+  // create a users doc with a derived username and the provided name
+  const derived = email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') || ('user'+Math.floor(Math.random()*9000+1000));
+  await db.collection('users').doc(cred.user.uid).set({
+    uid: cred.user.uid,
+    username: derived,
+    name: name, // حفظ الاسم الذي أدخله المستخدم
+    email: email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    provider: 'password'
+  }, {merge:true});
+  // بعد إنشاء الحساب الناجح، توجيه المستخدم إلى صفحة Dashboard
+  closeModalFn();
+  window.location.href = 'Profile.html';
+}
           
-          // بعد إنشاء الحساب الناجح، توجيه المستخدم إلى صفحة Dashboard
-          closeModalFn();
-          window.location.href = 'Profile.html';
         } else {
           await auth.signInWithEmailAndPassword(email, password);
           // بعد تسجيل الدخول الناجح، توجيه المستخدم إلى صفحة Dashboard
