@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>الملف الشخصي — بسيط</title>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--accent:#5a3fff;--muted:#6b7280}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:#071033}
+    .container{max-width:840px;margin:34px auto;padding:20px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(9,30,66,0.06)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .title{font-weight:800;font-size:18px}
+    .muted{color:var(--muted);font-size:13px}
+    .message{background:#f8fafc;border-radius:10px;padding:12px;margin-bottom:12px;border:1px solid #e6e9ef}
+    .message-header{display:flex;justify-content:space-between;margin-bottom:6px}
+    .message-text{font-size:15px;line-height:1.5}
+    .notification{position:fixed;top:20px;right:20px;background:var(--accent);color:white;padding:12px 16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;display:none}
+    .notification.show{display:block;animation:fadeInOut 3s ease}
+    @keyframes fadeInOut{0%,100%{opacity:0;transform:translateY(-10px)}10%,90%{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="top">
+        <div>
+          <div class="title">الرسائل الواردة</div>
+          <div class="muted">الرسائل المجهولة المرسلة إليك</div>
+        </div>
+        <div>
+          <button id="copyLinkBtn" class="btn">نسخ رابط الاستقبال</button>
+          <button id="refreshBtn" class="btn ghost">تحديث</button>
+        </div>
+      </div>
+
+      <div id="messagesContainer" style="margin-top:20px">
+        <p class="muted">جاري تحميل الرسائل...</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="newMessageNotification" class="notification">
+    لديك رسالة جديدة!
+  </div>
+
+  <!-- Netlify identity + firebase (compat) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // إعدادات Firebase (نفس الإعدادات في Index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+      authDomain: "unseen-93dd8.firebaseapp.com",
+      projectId: "unseen-93dd8",
+      storageBucket: "unseen-93dd8.firebasestorage.app",
+      messagingSenderId: "142670337449",
+      appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+      measurementId: "G-SPL7YN9LZ1"
+    };
+
+    // تهيئة Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    netlifyIdentity.init();
+
+    // عناصر الواجهة
+    const messagesContainer = document.getElementById('messagesContainer');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const notification = document.getElementById('newMessageNotification');
+
+    let currentUser = null;
+    let username = null;
+    let unsubscribeMessages = null;
+
+    // عند تحميل الصفحة، تحقق من حالة المستخدم
+    netlifyIdentity.on('init', user => {
+      currentUser = user;
+      if (user) {
+        loadUserProfile();
+      } else {
+        messagesContainer.innerHTML = '<p class="muted">يجب تسجيل الدخول لعرض الرسائل</p>';
+      }
+    });
+
+    netlifyIdentity.on('login', user => {
+      currentUser = user;
+      loadUserProfile();
+    });
+
+    netlifyIdentity.on('logout', () => {
+      currentUser = null;
+      if (unsubscribeMessages) unsubscribeMessages();
+      messagesContainer.innerHTML = '<p class="muted">يجب تسجيل الدخول لعرض الرسائل</p>';
+    });
+
+    // تحميل بيانات المستخدم والحصول على اسم المستخدم
+    async function loadUserProfile() {
+      try {
+        const userDoc = await db.collection('users').doc(currentUser.id).get();
+        if (userDoc.exists) {
+          username = userDoc.data().username;
+          updateProfileLink();
+          loadMessages();
+          setupRealtimeListener();
+        } else {
+          messagesContainer.innerHTML = '<p class="muted">لم يتم العثور على ملفك الشخصي</p>';
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+        messagesContainer.innerHTML = '<p class="muted">حدث خطأ في تحميل الملف الشخصي</p>';
+      }
+    }
+
+    // تحديث رابط الملف الشخصي
+    function updateProfileLink() {
+      if (username) {
+        copyLinkBtn.textContent = `نسخ الرابط: ${username}`;
+      }
+    }
+
+    // نسخ رابط الاستقبال
+    copyLinkBtn.addEventListener('click', async () => {
+      if (!username) {
+        alert('لم يتم تعيين اسم مستخدم بعد');
+        return;
+      }
+
+      const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(username)}`;
+      try {
+        await navigator.clipboard.writeText(profileUrl);
+        alert('تم نسخ الرابط: ' + profileUrl);
+      } catch (error) {
+        alert('فشل نسخ الرابط: ' + error.message);
+      }
+    });
+
+    // تحميل الرسائل من Firestore
+    async function loadMessages() {
+      try {
+        const messagesSnap = await db.collection('messages')
+          .where('toUsername', '==', username)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        displayMessages(messagesSnap);
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        messagesContainer.innerHTML = '<p class="muted">حدث خطأ في تحميل الرسائل</p>';
+      }
+    }
+
+    // إعداد مستمع الوقت الحقيقي للرسائل الجديدة
+    function setupRealtimeListener() {
+      if (unsubscribeMessages) unsubscribeMessages();
+
+      unsubscribeMessages = db.collection('messages')
+        .where('toUsername', '==', username)
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+              // عرض إشعار بالرسالة الجديدة
+              showNotification();
+              // إعادة تحميل الرسائل
+              loadMessages();
+            }
+          });
+        }, error => {
+          console.error('Realtime listener error:', error);
+        });
+    }
+
+    // عرض الإشعار
+    function showNotification() {
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // عرض الرسائل في الواجهة
+    function displayMessages(snapshot) {
+      if (snapshot.empty) {
+        messagesContainer.innerHTML = '<p class="muted">لا توجد رسائل حتى الآن</p>';
+        return;
+      }
+
+      let messagesHTML = '';
+      snapshot.forEach(doc => {
+        const message = doc.data();
+        messagesHTML += `
+          <div class="message">
+            <div class="message-header">
+              <span class="muted">من: ${message.visibleName || 'مجهول'}</span>
+              <span class="muted">${formatDate(message.createdAt)}</span>
+            </div>
+            <div class="message-text">${escapeHtml(message.messageText)}</div>
+          </div>
+        `;
+      });
+
+      messagesContainer.innerHTML = messagesHTML;
+    }
+
+    // تهيئة التاريخ
+    function formatDate(timestamp) {
+      if (!timestamp) return 'تاريخ غير معروف';
+      const date = timestamp.toDate();
+      return date.toLocaleString('ar-SA');
+    }
+
+    // حماية من حقن HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // زر التحديث
+    refreshBtn.addEventListener('click', () => {
+      if (currentUser) {
+        loadMessages();
+      }
+    });
+
+    // إغلاق Netlify Identity عند النجاح
+    netlifyIdentity.on('login', () => {
+      netlifyIdentity.close();
+    });
+  </script>
+</body>
+</html>
