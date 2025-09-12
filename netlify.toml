@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/u/:username"
+  to = "/Profile.html?u=:username"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/send/:username"
+  to = "/SendMessage.html?u=:username"
+  status = 200
+  force = true
