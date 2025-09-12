@@ -953,6 +953,78 @@ function openContactHandler(e){
     // Fetch stats initially and every minute
     fetchAndRenderStats();
     setInterval(fetchAndRenderStats, 60_000);
+  // دالة لإنشاء اسم مستخدم فريد إذا لم يكن موجوداً
+  async function ensureUsername(user) {
+    const userDoc = await db.collection('users').doc(user.id).get();
+    
+    if (!userDoc.exists || !userDoc.data().username) {
+      // إنشاء اسم مستخدم فريد بناء على البريد الإلكتروني أو معرف المستخدم
+      let baseUsername = user.email ? user.email.split('@')[0] : `user${user.id.substr(0, 6)}`;
+      
+      // إزالة الأحرف غير المرغوب فيها
+      baseUsername = baseUsername.replace(/[^a-zA-Z0-9_]/g, '');
+    // التأكد من أن اسم المستخدم فريد
+      let username = baseUsername;
+      let counter = 1;
+      
+      while (true) {
+        const existingUser = await db.collection('users')
+          .where('username', '==', username)
+          .get();
+        
+        if (existingUser.empty) break;
+        
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+         // حفظ اسم المستخدم في قاعدة البيانات
+      await db.collection('users').doc(user.id).set({
+        uid: user.id,
+        username: username,
+        email: user.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      
+      return username;
+    }
+    
+    return userDoc.data().username;
+  }
+     // دالة لتحديث رابط الملف الشخصي
+  async function updateProfileLink(user) {
+    try {
+      const username = await ensureUsername(user);
+      const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(username)}`;
+      
+      // تحديث النص الظاهر
+      profileLinkText.textContent = `unseen.app/u/${username}`;
+      profileLinkText.dataset.url = profileUrl;
+      
+      // جعل زر CTA ينقل إلى صفحة الملف الشخصي
+      ctaBtn.onclick = () => {
+        window.location.href = 'Profile.html';
+      };
+// جعل زر نسخ الرابط يعمل
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(profileUrl);
+          showToast(currentLang === 'ar' ? 'تم نسخ الرابط' : 'Link copied');
+        } catch (err) {
+          showToast(currentLang === 'ar' ? 'فشل نسخ الرابط' : 'Failed to copy link');
+        }
+      };
+      } catch (error) {
+      console.error('Error updating profile link:', error);
+    }
+  }
+
+  // تحديث واجهة المستخدم بعد تسجيل الدخول
+  netlifyIdentity.on('login', async (user) => {
+    updateAuthUI(user);
+    await ensureUserDoc(user);
+    await updateProfileLink(user);
+    showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+       });
   </script>
 </body>
 </html>
