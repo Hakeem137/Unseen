@@ -804,22 +804,55 @@
 
     async function updateProfileLink(user) {
       // try get username from Firestore
-      try{
-        const doc = await db.collection('users').doc(user.id).get();
-        let username = null;
-        if(doc.exists && doc.data().username) username = doc.data().username;
-        const display = username ? `unseen.app/Profile.html?u=${username}` : `unseen.app/Profile.html?u=${user.id}`;
-        // put into element
-        if (profileLinkText) {
-          profileLinkText.textContent = display;
-        }
-      }catch(e){
-        if (profileLinkText) {
-          profileLinkText.textContent = `unseen.app/u/${user.id}`;
-        }
-      }
+      
+try {
+    const doc = await db.collection('users').doc(user.id).get();
+    let username = null;
+    if (doc.exists && doc.data().username) username = doc.data().username;
+    // link to public profile/message page
+    const displayPath = username ? `Profile.html?u=${encodeURIComponent(username)}` : `Profile.html?u=${encodeURIComponent(user.id)}`;
+
+    // update visible profile link text
+    if (profileLinkText) {
+      profileLinkText.textContent = displayPath;
+      profileLinkText.dataset.href = displayPath; // store actual href
     }
 
+    // make CTA and contact buttons go to the public profile/message page
+    ctaBtn.dataset.href = displayPath;
+    openContact.dataset.href = displayPath;
+  // if you want cta to redirect immediately on click:
+    ctaBtn.removeEventListener('click', ctaClickHandler); // in case added before
+    ctaBtn.addEventListener('click', ctaClickHandler);
+
+    // change contact behaviour to go to send-message page (instead of opening contact modal)
+    openContact.removeEventListener('click', openContactHandler);
+    openContact.addEventListener('click', openContactHandler);
+
+  } catch (e) {
+    console.error('updateProfileLink error', e);
+  }
+}
+    function ctaClickHandler(e){
+  const href = e.currentTarget.dataset.href;
+  if (href) {
+    window.location.href = href;
+  } else {
+    // fallback: open login if no href yet
+    netlifyIdentity.open();
+  }
+}
+
+function openContactHandler(e){
+  const href = e.currentTarget.dataset.href;
+  if (href) {
+    // redirect visitor to the public message form for that profile
+    window.location.href = href.replace('Profile.html','SendMessage.html');
+    // (we will create SendMessage.html below)
+  } else {
+    openModal(contactModal); // fallback to old contact modal
+  }
+}
     // Copy profile link
     copyBtn.addEventListener('click', async ()=>{
       if (!profileLinkText) return;
