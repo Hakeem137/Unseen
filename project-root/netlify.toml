@@ -1,0 +1,7 @@
+[build]
+  functions = "functions"
+  publish = "private"
+
+[dev]
+  command = "netlify dev"
+  port = 8888
