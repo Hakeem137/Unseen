@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unseen - شارك رابطك</title>
+    <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4ade80;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'El Messiri', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 80px 0 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,261.3C672,256,768,224,864,218.7C960,213,1056,235,1152,234.7C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 60px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+        }
+
+        .card-title i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .link-container {
+            display: flex;
+            margin: 25px 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .link-display {
+            flex: 1;
+            padding: 18px 25px;
+            font-size: 1.2rem;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            direction: ltr;
+            text-align: center;
+            border-right: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            color: var(--dark);
+        }
+
+        .btn {
+            padding: 16px 30px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-copy {
+            border-radius: 0 var(--radius) var(--radius) 0;
+            min-width: 140px;
+        }
+
+        .copy-message {
+            display: none;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Steps */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .step {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+
+        .step-image {
+            width: 100%;
+            height: 180px;
+            margin: 20px auto;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f0f4ff, #e3eeff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 4rem;
+            border: 2px dashed #b8d4fe;
+        }
+
+        /* Instagram Steps */
+        .instagram-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .instagram-step {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .instagram-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .instagram-step-image {
+            flex: 1;
+            max-width: 350px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background: linear-gradient(135deg, #f0f4ff, #e3eeff);
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 4rem;
+            border: 2px dashed #b8d4fe;
+        }
+
+        .instagram-step-content {
+            flex: 2;
+        }
+
+        .instagram-step-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .instagram-step-content p {
+            color: #495057;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-tagline {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .instagram-step {
+                flex-direction: column;
+            }
+            
+            .instagram-step:nth-child(even) {
+                flex-direction: column;
+            }
+            
+            .instagram-step-image {
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .link-container {
+                flex-direction: column;
+            }
+            
+            .btn-copy {
+                border-radius: 0 0 var(--radius) var(--radius);
+                min-width: 100%;
+                padding: 15px;
+            }
+            
+            .link-display {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .card {
+                padding: 30px 25px;
+            }
+            
+            header {
+                padding: 60px 0 40px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .stats {
+                gap: 20px;
+            }
+            
+            .stat {
+                min-width: 120px;
+                padding: 15px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .instagram-step {
+                padding: 20px;
+            }
+            
+            .instagram-step-image {
+                height: 180px;
+                font-size: 3rem;
+            }
+            
+            header {
+                padding: 50px 0 30px;
+            }
+            
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Unseen</div>
+                <div class="tagline">احصل على رسائل مجهولة من أصدقائك – ممتعة، حقيقية، وخاصة دائماً.</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-copy"></i>
+                    الخطوة 1: انسخ رابطك الشخصي
+                </h2>
+                <p>انسخ الرابط الخاص بك من أجل مشاركته على وسائل التواصل الاجتماعي.</p>
+                
+                <div class="link-container">
+                    <div class="link-display" id="user-link">unseen.app/u/yourname</div>
+                    <button class="btn btn-primary btn-copy" id="copy-btn">
+                        <i class="fas fa-copy"></i> انسخ الرابط
+                    </button>
+                </div>
+                
+                <div class="copy-message" id="copy-message">
+                    <i class="fas fa-check-circle"></i> تم نسخ الرابط بنجاح!
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-share-alt"></i>
+                    الخطوة 2: شارك الرابط على إنستغرام
+                </h2>
+                <p>اتبع هذه الخطوات البسيطة لمشاركة الرابط في قصص إنستغرام:</p>
+                
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-title">افتح إنستغرام</div>
+                        <p>افتح تطبيق إنستغرام على هاتفك</p>
+                        <div class="step-image">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-title">أنشئ قصة جديدة</div>
+                        <p>انقر على "+" أو صورتك لإنشاء قصة جديدة</p>
+                        <div class="step-image">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-title">أضف ملصق الرابط</div>
+                        <p>انقر على ملصق الرابط وألصق رابطك</p>
+                        <div class="step-image">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-title">شارك قصتك</div>
+                        <p>انشر قصتك مع الرابط ليراها أصدقاؤك</p>
+                        <div class="step-image">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> شارك الآن!
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    شرح مفصل لإضافة الرابط إلى قصتك
+                </h2>
+                
+                <div class="instagram-steps">
+                    <div class="instagram-step">
+                        <div class="instagram-step-image">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <div class="instagram-step-content">
+                            <h3 class="instagram-step-title">انقر على ملصق الرابط</h3>
+                            <p>بعد إنشاء قصتك، انقر على أيقونة الملصقات في الأعلى، ثم اختر "رابط" من القائمة.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instagram-step">
+                        <div class="instagram-step-image">
+                            <i class="fas fa-paste"></i>
+                        </div>
+                        <div class="instagram-step-content">
+                            <h3 class="instagram-step-title">الصق رابطك</h3>
+                            <p>في الحقل المخصص، الصق الرابط الذي نسخته مسبقاً. يمكنك أيضاً تخصيص نص الملصق إذا أردت.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instagram-step">
+                        <div class="instagram-step-image">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="instagram-step-content">
+                            <h3 class="instagram-step-title">انشر قصتك</h3>
+                            <p>اضبط موقع الملصق كما تريد، ثم انشر قصتك. يمكن لأصدقائك الآن النقر على الرابط لإرسال رسائل مجهولة!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Unseen</div>
+                <p class="footer-tagline">تواصل الأسئلة أراء العزايا. فلوها. وأنت غير مرئي.</p>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number">5,432</div>
+                        <div class="stat-label">رسائل اليوم</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">5,432</div>
+                        <div class="stat-label">سنة دموق</div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p style="margin-bottom: 10px; opacity: 0.8;">unseen.app/u/yourname</p>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">تواصل معنا</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButton = document.getElementById('copy-btn');
+            const userLink = document.getElementById('user-link');
+            const copyMessage = document.getElementById('copy-message');
+            
+            copyButton.addEventListener('click', function() {
+                // استخدام Clipboard API إذا كان متاحًا
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(userLink.textContent)
+                        .then(() => {
+                            showCopyMessage();
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy: ', err);
+                            fallbackCopyText();
+                        });
+                } else {
+                    fallbackCopyText();
+                }
+            });
+            
+            function fallbackCopyText() {
+                // طريقة احتياطية للنسخ
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = userLink.textContent;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                showCopyMessage();
+            }
+            
+            function showCopyMessage() {
+                // إظهار رسالة التأكيد
+                copyMessage.style.display = 'block';
+                
+                // إخفاء الرسالة بعد 3 ثوانٍ
+                setTimeout(function() {
+                    copyMessage.style.display = 'none';
+                }, 3000);
+            }
+            
+            // إضافة تأثيرات تفاعلية للأزرار
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
