@@ -860,6 +860,7 @@ function logDebug(msg) {
           }
         }
       } catch (error) {
+       logDebug('❌ Error: ' + error.message); 
         console.error('Error loading user data:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
