@@ -821,6 +821,15 @@
         if (userDoc.exists) {
           userData = userDoc.data();
           console.log('User data found:', userData);
+          if (!userDoc.exists) {
+  console.log('User not found, creating new...');
+  await db.collection('users').doc(user.id).set({
+    uid: user.id,
+    username: user.email ? user.email.split('@')[0] : 'user' + user.id.slice(0, 6),
+    email: user.email || null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
           updateUIWithUserData(user, userData);
           await loadUserMessages(user.id);
           await loadUserStats(user.id);
