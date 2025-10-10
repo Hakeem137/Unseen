@@ -1019,6 +1019,16 @@
     setInterval(fetchAndRenderStats, 60_000);
   </script>
   <script type="module" src="./firebase-init.js"></script>
+  <script>
+  if (window.location.hash && window.location.hash.includes('recovery_token')) {
+    netlifyIdentity.init();
+    netlifyIdentity.on('init', user => {
+      if (!user) {
+        netlifyIdentity.open('recovery');
+      }
+    });
+  }
+</script>
 </body>
   
 </html>
