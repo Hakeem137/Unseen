@@ -1019,16 +1019,25 @@
     setInterval(fetchAndRenderStats, 60_000);
   </script>
   <script type="module" src="./firebase-init.js"></script>
-  <script>
+  
+<script>
+document.addEventListener("DOMContentLoaded", function() {
   if (window.location.hash && window.location.hash.includes('recovery_token')) {
-    netlifyIdentity.init();
-    netlifyIdentity.on('init', user => {
-      if (!user) {
-        netlifyIdentity.open('recovery');
-      }
-    });
+    console.log("🔐 Recovery token detected, initializing Netlify Identity...");
+    // ننتظر ثانيتين للتأكد من تحميل الـ Widget
+    setTimeout(() => {
+      netlifyIdentity.init();
+      netlifyIdentity.on('init', user => {
+        if (!user) {
+          console.log("🚪 Opening recovery window...");
+          netlifyIdentity.open('recovery');
+        }
+      });
+    }, 1500);
   }
+});
 </script>
+  
 </body>
   
 </html>
