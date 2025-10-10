@@ -769,28 +769,7 @@
         // الحصول على JWT token من Netlify Identity
         const token = await netlifyIdentity.currentUser().jwt();
         
-        // تسجيل الدخول إلى Firebase باستخدام Custom Token
-        
-    // === Replaced Netlify->Google credential flow with secure custom token flow ===
-    // We send the Netlify Identity JWT to a Netlify Function that returns a Firebase custom token,
-    // then sign in with signInWithCustomToken(firebaseToken).
-  /*
-        try {
-      const netlifyToken = await netlifyIdentity.currentUser().jwt();
-      const res = await fetch('/.netlify/functions/createFirebaseToken', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ netlify_token: netlifyToken })
-      });
-      if (!res.ok) throw new Error('Failed to obtain Firebase token from server');
-      const data = await res.json();
-      const firebaseToken = data.firebaseToken;
-      if (!firebaseToken) throw new Error('No firebaseToken returned from server');
-      await auth.signInWithCustomToken(firebaseToken);
-    } catch (err) {
-      console.error('Login error (custom token flow):', err);
-   }
-   */
+
       // preserve existing error-handling function if present
       if (typeof showErrorState === 'function') {
         showErrorState('فشل في تسجيل الدخول: ' + err.message);
