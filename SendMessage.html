@@ -414,6 +414,25 @@
             </a>
         </div>
     </div>
+    <!-- ✅ دالة الإيموجي وعدد الأحرف -->
+<script>
+  function addEmoji(emoji) {
+    const messageField = document.getElementById("message");
+    messageField.value += emoji;
+    updateCharCount();
+  }
+
+  function updateCharCount() {
+    const messageField = document.getElementById("message");
+    const charCount = document.getElementById("charCount");
+    charCount.textContent = messageField.value.length;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const messageField = document.getElementById("message");
+    messageField.addEventListener("input", updateCharCount);
+  });
+</script>
 <!-- ✅ ربط Firebase -->
 <script type="module" src="./firebase-init.js"></script>
 
@@ -459,5 +478,6 @@
     }
   });
 </script>
+    
 </body>
 </html>
