@@ -57,3 +57,4 @@ onAuthStateChanged(auth, async (user) => {
     console.log("🚪 المستخدم غير مسجل حاليًا");
   }
 });
+export { app };
