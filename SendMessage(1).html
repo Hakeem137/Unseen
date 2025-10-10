@@ -416,46 +416,50 @@
     </div>
 
     <script>
-        // عداد الأحرف
-        const messageTextarea = document.getElementById('message');
-        const charCount = document.getElementById('charCount');
-        
-        messageTextarea.addEventListener('input', function() {
-            charCount.textContent = this.value.length;
-        });
-        
-        // إضافة إيموجي إلى النص
-        function addEmoji(emoji) {
-            const messageField = document.getElementById('message');
-            const startPos = messageField.selectionStart;
-            const endPos = messageField.selectionEnd;
-            const currentText = messageField.value;
+<script type="module" src="./firebase-init.js"></script>
+
+<!-- سكربت الإرسال الحقيقي -->
+<script type="module">
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { app } from "./firebase-init.js"; // تأكد إنك بتصدّر app من ملف firebase-init.js لو مش كده هقولك إزاي تحت
+
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const form = document.getElementById("messageForm");
+  const messageField = document.getElementById("message");
+  const charCount = document.getElementById("charCount");
+  const params = new URLSearchParams(window.location.search);
+  const recipientId = params.get("u");
+if (!recipientId) {
+    alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = messageField.value.trim();
+
+    if (message === "") {
+      alert("يرجى كتابة رسالة قبل الإرسال");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        recipientId: recipientId,
+        content: message,
+        createdAt: serverTimestamp(),
+      });
             
-            messageField.value = currentText.substring(0, startPos) + emoji + currentText.substring(endPos);
-            messageField.focus();
-            messageField.selectionStart = startPos + emoji.length;
-            messageField.selectionEnd = startPos + emoji.length;
-            
-            // تحديث عداد الأحرف
-            charCount.textContent = messageField.value.length;
-        }
-        
-        // معالجة إرسال النموذج
-        document.getElementById('messageForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const message = document.getElementById('message').value;
-            
-            if (message.trim() === '') {
-                alert('يرجى كتابة رسالة قبل الإرسال');
-                return;
-            }
-            
-            // هنا يمكنك إضافة كود الإرسال الفعلي
-            alert('تم إرسال رسالتك المجهولة بنجاح!');
-            document.getElementById('message').value = '';
-            charCount.textContent = '0';
-        });
+alert("✅ تم إرسال رسالتك بنجاح!");
+      messageField.value = "";
+      charCount.textContent = "0";
+    } catch (error) {
+      console.error("❌ خطأ أثناء الإرسال:", error);
+      alert("حصل خطأ أثناء الإرسال، حاول مرة أخرى.");
+    }
+  });
     </script>
 </body>
 </html>
