@@ -414,15 +414,14 @@
             </a>
         </div>
     </div>
-
-    <script>
+<!-- ✅ ربط Firebase -->
 <script type="module" src="./firebase-init.js"></script>
 
-<!-- سكربت الإرسال الحقيقي -->
+<!-- ✅ كود الإرسال الحقيقي -->
 <script type="module">
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-  import { app } from "./firebase-init.js"; // تأكد إنك بتصدّر app من ملف firebase-init.js لو مش كده هقولك إزاي تحت
+  import { app } from "./firebase-init.js";
 
   const db = getFirestore(app);
   const auth = getAuth(app);
@@ -432,11 +431,11 @@
   const charCount = document.getElementById("charCount");
   const params = new URLSearchParams(window.location.search);
   const recipientId = params.get("u");
-if (!recipientId) {
+
+  if (!recipientId) {
     alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
   }
-
-  form.addEventListener("submit", async (e) => {
+      form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const message = messageField.value.trim();
 
@@ -451,16 +450,14 @@ if (!recipientId) {
         content: message,
         createdAt: serverTimestamp(),
       });
-            
-alert("✅ تم إرسال رسالتك بنجاح!");
+        alert("✅ تم إرسال رسالتك بنجاح!");
       messageField.value = "";
       charCount.textContent = "0";
     } catch (error) {
       console.error("❌ خطأ أثناء الإرسال:", error);
-      alert("حصل خطأ أثناء الإرسال، حاول مرة أخرى.");
+      alert("حدث خطأ أثناء الإرسال، راجع Console.");
     }
   });
-    </script>
-      <script type="module" src="./firebase-init.js"></script>
+</script>
 </body>
 </html>
