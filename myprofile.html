@@ -706,7 +706,7 @@
       apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
       authDomain: "unseen-93dd8.firebaseapp.com",
       projectId: "unseen-93dd8",
-      storageBucket: "unseen-93dd8.firebasestorage.app",
+      storageBucket: "unseen-93dd8.appspot.com",
       messagingSenderId: "142670337449",
       appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
       measurementId: "G-SPL7YN9LZ1"
@@ -774,7 +774,8 @@
     // === Replaced Netlify->Google credential flow with secure custom token flow ===
     // We send the Netlify Identity JWT to a Netlify Function that returns a Firebase custom token,
     // then sign in with signInWithCustomToken(firebaseToken).
-    try {
+  /*
+        try {
       const netlifyToken = await netlifyIdentity.currentUser().jwt();
       const res = await fetch('/.netlify/functions/createFirebaseToken', {
         method: 'POST',
@@ -788,6 +789,8 @@
       await auth.signInWithCustomToken(firebaseToken);
     } catch (err) {
       console.error('Login error (custom token flow):', err);
+   }
+   */
       // preserve existing error-handling function if present
       if (typeof showErrorState === 'function') {
         showErrorState('فشل في تسجيل الدخول: ' + err.message);
@@ -954,8 +957,9 @@
       }
       
       // تحديث رابط الملف الشخصي
-      const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(userData.username || user.id)}`;
-      profileLink.value = profileUrl;
+// ✅ توليد رابط الملف الشخصي باستخدام UID الحقيقي
+const profileUrl = `${window.location.origin}/SendMessage.html?u=${user.id}`;
+profileLink.value = profileUrl;
     }
 
     // تحميل رسائل المستخدم
