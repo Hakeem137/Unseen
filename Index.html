@@ -836,23 +836,9 @@ console.log('✅ مستخدم جديد تم إنشاؤه');
   }
 }
     
-    // دالة لإنشاء اسم مستخدم فريد إذا لم يكن موجوداً (نسخة محسنة)
 
-async function checkAdminStatus(user) {
-  try {
-    const userDoc = await db.collection('users').doc(user.id).get();
-    if (userDoc.exists && userDoc.data().isAdmin) {
-      adminBtn.style.display = 'inline-flex';
-      console.log('✅ المستخدم مسؤول - تم إظهار زر الأدمن');
-    } else {
-      adminBtn.style.display = 'none';
-      console.log('❌ المستخدم ليس مسؤولاً - تم إخفاء زر الأدمن');
-    }
-      } catch (error) {
-    console.error('Error checking admin status:', error);
-    adminBtn.style.display = 'none';
-  }
-}
+
+    
     // دالة واحدة محدثة لتحديث رابط الملف الشخصي
     async function updateProfileLink(user) {
       try {
