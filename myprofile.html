@@ -747,20 +747,29 @@
     const maxRetries = 3;
 
     // تهيئة Netlify Identity
-    netlifyIdentity.init();
-
-    // التحقق من حالة المستخدم عند تحميل الصفحة
-    netlifyIdentity.on('init', user => {
-      if (!user) {
-        // إذا لم يكن المستخدم مسجلاً، إظهار رسالة تسجيل الدخول
-        showLoginPrompt();
-        return;
-      }
-      
-      // إذا كان المستخدم مسجلاً، تسجيل الدخول إلى Firebase
-      loginWithNetlifyToken(user);
-    });
-
+ 
+// 🔥 النظام الجديد - ضف هذا الكود:
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    console.log('✅ مستخدم Firebase متصل:', user.uid);
+    currentUser = user;
+    await loadUserData(user);
+    showProfileContent();
+  } else {
+    console.log('🚫 لا يوجد مستخدم، جاري التسجيل المجهول...');
+    showLoadingState();
+    
+    try {
+      const userCredential = await auth.signInAnonymously();
+      console.log('✅ تم تسجيل الدخول المجهول:', userCredential.user.uid);
+      currentUser = userCredential.user;
+      await loadUserData(userCredential.user);
+    } catch (error) {
+      console.error('❌ خطأ في التسجيل:', error);
+      showErrorState('فشل في الاتصال: ' + error.message);
+    }
+  }
+  
     // تسجيل الدخول إلى Firebase باستخدام Netlify Identity Token
     async function loginWithNetlifyToken(user) {
       try {
@@ -1076,21 +1085,37 @@ profileLink.value = profileUrl;
       }
     });
 
-    // فتح نافذة تسجيل الدخول
-    loginBtn.addEventListener('click', () => {
-      netlifyIdentity.open();
-    });
-
-    loginPromptBtn.addEventListener('click', () => {
-      netlifyIdentity.open();
-    });
-
+    
+// 🔥 تسجيل الخروج الجديد - ضف هذا الكود:
+logoutBtn.addEventListener('click', () => {
+  auth.signOut();
+  showToast('تم تسجيل الخروج');
+  showLoginPrompt();
+});
     // التعامل مع حدث تسجيل الدخول
-    netlifyIdentity.on('login', (user) => {
-      currentUser = user;
-      loginWithNetlifyToken(user);
-    });
-
+    // 🔥 الأزرار الجديدة - ضف هذا الكود:
+loginBtn.addEventListener('click', async () => {
+  try {
+    showLoadingState();
+    const userCredential = await auth.signInAnonymously();
+    console.log('✅ تم التسجيل المجهول:', userCredential.user.uid);
+    showToast('تم التسجيل بنجاح!');
+  } catch (error) {
+    console.error('❌ خطأ في التسجيل:', error);
+    showToast('فشل في التسجيل: ' + error.message, 'error');
+  }
+});
+loginPromptBtn.addEventListener('click', async () => {
+  try {
+    showLoadingState();
+    const userCredential = await auth.signInAnonymously();
+    console.log('✅ تم التسجيل المجهول:', userCredential.user.uid);
+    showToast('تم التسجيل بنجاح!');
+  } catch (error) {
+    console.error('❌ خطأ في التسجيل:', error);
+    showToast('فشل في التسجيل: ' + error.message, 'error');
+  }
+});
     // تبديل الثيم
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark');
@@ -1124,10 +1149,7 @@ profileLink.value = profileUrl;
     });
 
     // التعامل مع حدث تسجيل الخروج
-    netlifyIdentity.on('logout', () => {
-      auth.signOut();
-      showLoginPrompt();
-    });
+
 
     // نسخ رابط الملف الشخصي
     copyLinkBtn.addEventListener('click', () => {
