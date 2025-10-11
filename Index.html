@@ -811,63 +811,48 @@
       netlifyIdentity.logout();
     });
 
+    
     async function ensureUserDoc(user) {
-      const docRef = db.collection('users').doc(user.id);
-      const doc = await docRef.get();
-      if(!doc.exists){
-        // create a basic user doc; try to derive nice username
-        const derivedName = user.email ? user.email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') : ('user'+user.id.slice(0,6));
-        await docRef.set({
-          uid: user.id,
-          username: derivedName,
-          email: user.email || null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          isAdmin: false // افتراضيًا ليس مسؤولاً
-        });
-      }
-    }
-
+  const docRef = db.collection('users').doc(user.id);
+  const doc = await docRef.get();
+  
+  if(!doc.exists){
+    // مستخدم جديد - أنشئ مستند مع isAdmin: false
+    const derivedName = user.email ? user.email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') : ('user'+user.id.slice(0,6));
+    await docRef.set({
+      uid: user.id,
+      username: derivedName,
+      email: user.email || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      isAdmin: false // للمستخدمين الجدد فقط
+    });
+console.log('✅ مستخدم جديد تم إنشاؤه');
+  } else {
+    // مستخدم موجود - تحديث آخر دخول فقط دون المساس بالبيانات الأخرى
+    await docRef.update({
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    console.log('✅ مستخدم موجود - تم تحديث آخر دخول');
+  }
+}
+    
     // دالة لإنشاء اسم مستخدم فريد إذا لم يكن موجوداً (نسخة محسنة)
-    async function ensureUsername(user) {
-      const userDoc = await db.collection('users').doc(user.id).get();
-      
-      if (!userDoc.exists || !userDoc.data().username) {
-        // إنشاء اسم مستخدم فريد بناء على البريد الإلكتروني أو معرف المستخدم
-        let baseUsername = user.email ? user.email.split('@')[0] : `user${user.id.substr(0, 6)}`;
-        
-        // إزالة الأحرف غير المرغوب فيها
-        baseUsername = baseUsername.replace(/[^a-zA-Z0-9_-]/g, '');
-        
-        // التأكد من أن اسم المستخدم فريد
-        let username = baseUsername;
-        let counter = 1;
-        
-        while (true) {
-          const existingUser = await db.collection('users')
-            .where('username', '==', username)
-            .get();
-          
-          if (existingUser.empty) break;
-          
-          username = `${baseUsername}${counter}`;
-          counter++;
-        }
-        
-        // حفظ اسم المستخدم في قاعدة البيانات
-        await db.collection('users').doc(user.id).set({
-          uid: user.id,
-          username: username,
-          email: user.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          isAdmin: false
-        }, { merge: true });
-        
-        return username;
-      }
-      
-      return userDoc.data().username;
-    }
 
+async function checkAdminStatus(user) {
+  try {
+    const userDoc = await db.collection('users').doc(user.id).get();
+    if (userDoc.exists && userDoc.data().isAdmin) {
+      adminBtn.style.display = 'inline-flex';
+      console.log('✅ المستخدم مسؤول - تم إظهار زر الأدمن');
+    } else {
+      adminBtn.style.display = 'none';
+      console.log('❌ المستخدم ليس مسؤولاً - تم إخفاء زر الأدمن');
+    }
+      } catch (error) {
+    console.error('Error checking admin status:', error);
+    adminBtn.style.display = 'none';
+  }
+}
     // دالة واحدة محدثة لتحديث رابط الملف الشخصي
     async function updateProfileLink(user) {
       try {
