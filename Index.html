@@ -693,7 +693,7 @@
         ensureUserDoc(user);
         updateProfileLink(user);
         showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
-        
+      });
 
       
       netlifyIdentity.on('logout', () => {
