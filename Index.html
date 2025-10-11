@@ -694,11 +694,7 @@
         updateProfileLink(user);
         showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
         
-        // توجيه المستخدم إلى صفحة الملف الشخصي بعد تسجيل الدخول
-        setTimeout(() => {
-          window.location.href = 'MyProfile.html';
-        }, 1000);
-      });
+
       
       netlifyIdentity.on('logout', () => {
         updateAuthUI(null);
@@ -975,11 +971,7 @@ console.log('✅ مستخدم جديد تم إنشاؤه');
       await updateProfileLink(user);
       showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
       
-      // توجيه المستخدم إلى صفحة الملف الشخصي بعد تسجيل الدخول
-      setTimeout(() => {
-        window.location.href = 'MyProfile.html';
-      }, 1000);
-    });
+      
 
     // Init
     loadSettings();
