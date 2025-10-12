@@ -688,6 +688,30 @@
       if(e.key==='Escape') closeModalFn(); 
     });
 
+// دالة ensureUsername لإنشاء أو جلب اسم المستخدم
+    async function ensureUsername(user) {
+      try {
+        const userDoc = await db.collection('users').doc(user.id).get();
+        if (userDoc.exists) {
+          return userDoc.data().username || user.id;
+        } else {
+          // إنشاء مستند مستخدم جديد مع اسم مستخدم
+          const username = user.email ? user.email.split('@')[0] : 'user' + user.id.slice(0, 6);
+          await db.collection('users').doc(user.id).set({
+            uid: user.id,
+            username: username,
+            email: user.email || null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            isAdmin: false
+          });
+          return username;
+        }
+      } catch (error) {
+        console.error('Error ensuring username:', error);
+        return user.id;
+      }
+    }
+    
     // Netlify Identity functions
     function initNetlifyIdentity() {
       // تهيئة Netlify Identity
@@ -846,41 +870,39 @@ console.log('✅ مستخدم جديد تم إنشاؤه');
 
     
     // دالة واحدة محدثة لتحديث رابط الملف الشخصي
-    async function updateProfileLink(user) {
-      try {
-        const username = await ensureUsername(user);
-        const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(username)}`;
-        
-        // تحديث النص الظاهر
-        profileLinkText.textContent = `unseen.app/u/${username}`;
-        profileLinkText.dataset.url = profileUrl;
-        
+async function updateProfileLink(user) {
+  try {
+    const username = await ensureUsername(user);
+    const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(username)}`;
+    
+    // تحديث النص الظاهر
+    profileLinkText.textContent = `unseen.app/u/${username}`;
+    profileLinkText.dataset.url = profileUrl;
+    
         // إضافة حدث نسخ الرابط
-        copyBtn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(profileUrl);
-            showToast(currentLang === 'ar' ? 'تم نسخ الرابط' : 'Link copied');
-          } catch (err) {
-            showToast(currentLang === 'ar' ? 'فشل نسخ الرابط' : 'Failed to copy link');
-          }
-        };
-        
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(profileUrl);
+        showToast(currentLang === 'ar' ? 'تم نسخ الرابط' : 'Link copied');
+      } catch (err) {
+        showToast(currentLang === 'ar' ? 'فشل نسخ الرابط' : 'Failed to copy link');
+      }
+    };
         // تحديث زر CTA للتوجيه إلى صفحة البروفايل
         ctaBtn.onclick = () => {
-          const currentUser = netlifyIdentity.currentUser();
-          if (!currentUser) {
-            netlifyIdentity.open();
-            return;
-          }
-          window.location.href = 'MyProfile.html';
-        };
-        
-      } catch (error) {
-        console.error('Error updating profile link:', error);
-        showToast(currentLang === 'ar' ? 'حدث خطأ في تحميل الرابط' : 'Error loading link');
+      const currentUser = netlifyIdentity.currentUser();
+      if (!currentUser) {
+        netlifyIdentity.open();
+        return;
       }
-    }
-
+      window.location.href = 'MyProfile.html';
+    };
+    
+  } catch (error) {
+    console.error('Error updating profile link:', error);
+    showToast(currentLang === 'ar' ? 'حدث خطأ في تحميل الرابط' : 'Error loading link');
+  }
+}
     // Copy profile link
     copyBtn.addEventListener('click', async ()=>{
       if (!profileLinkText) return;
