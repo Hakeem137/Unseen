@@ -39,7 +39,7 @@
 
     header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;gap:12px}
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700}
+    .logo{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--accent))}
     .brand h1{margin:0;font-size:1.05rem}
     nav{display:flex;gap:12px;align-items:center}
     nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
@@ -184,7 +184,9 @@
 <body>
   <header>
     <div class="brand">
-      <div class="logo" aria-hidden>U</div>
+      <div class="logo" aria-hidden>
+  <img src="اللينك_اللي_هتحطو_هنا" alt="Unseen Logo" style="width:100%;height:100%;object-fit:contain;padding:6px">
+</div>
       <div>
         <h1>Unseen</h1>
         <div class="muted" style="font-size:12px">رسائل مجهولة — خصوصية أولاً</div>
