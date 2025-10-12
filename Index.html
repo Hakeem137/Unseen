@@ -39,7 +39,18 @@
 
     header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;gap:12px}
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700}
+    .logo{
+  display:inline-grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  /* شيل التدرج اللوني */
+  /* background:linear-gradient(135deg,var(--primary),var(--accent)); */
+  background: transparent; /* أو لون خلفية ثابت إذا اللوجو يحتاج */
+  color:white;
+  font-weight:700
+}
     .brand h1{margin:0;font-size:1.05rem}
     nav{display:flex;gap:12px;align-items:center}
     nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
@@ -119,14 +130,6 @@
     .back-to-top{position:fixed;left:18px;bottom:18px;border-radius:999px;padding:10px;display:none;z-index:80}
     .back-to-top.show{display:inline-flex}
 
-    /* Admin Panel */
-    .admin-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:320px;background:var(--bg);z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.1);padding:20px;overflow-y:auto}
-    .admin-panel.open{display:block}
-    .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-    .admin-section{margin-bottom:20px}
-    .admin-list{list-style:none;padding:0;margin:0}
-    .admin-list li{padding:10px;border-bottom:1px solid rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
-    .admin-actions{display:flex;gap:8px}
 
     /* Toast notifications */
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:12px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;display:none;align-items:center;gap:10px}
@@ -184,13 +187,15 @@
 <body>
   <header>
     <div class="brand">
-      <div class="logo" aria-hidden>U</div>
+<div class="logo" aria-hidden>
+  <img src="https://your-cdn.com/logo.png" alt="Unseen Logo" style="width:100%;height:100%;object-fit:contain;">
+</div>
       <div>
         <h1>Unseen</h1>
         <div class="muted" style="font-size:12px">رسائل مجهولة — خصوصية أولاً</div>
       </div>
     </div>
-
+    
     <nav aria-label="القائمة الرئيسية">
       <a href="#features">المزايا</a>
       <a href="#testimonials">آراء</a>
@@ -205,10 +210,9 @@
 
       <!-- Netlify auth controls -->
       <button class="icon-btn" id="auth-btn" title="تسجيل/حساب"><span class="material-icons">person</span></button>
-      <button class="icon-btn" id="signout-btn" title="تسجيل خروج" style="display:none"><span class="material-icons">logout</span></button>
+<button class="icon-btn" id="signout-btn" title="تسجيل خروج" style="display:none"><span class="material-icons">logout</span></button>
       
       <!-- Admin panel toggle (visible only for admins) -->
-      <button class="icon-btn" id="admin-btn" title="لوحة التحكم" style="display:none"><span class="material-icons">admin_panel_settings</span></button>
 
       <button class="hamburger" id="hamburger" aria-label="قائمة"> <span class="material-icons">menu</span></button>
     </div>
@@ -465,10 +469,7 @@
     const profileLinkText = document.getElementById('profile-link-text');
     const authBtn = document.getElementById('auth-btn');
     const signoutBtn = document.getElementById('signout-btn');
-    const adminBtn = document.getElementById('admin-btn');
-    const adminPanel = document.getElementById('admin-panel');
-    const closeAdminPanel = document.getElementById('close-admin-panel');
-    const hamburger = document.getElementById('hamburger');
+     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobile-nav');
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
