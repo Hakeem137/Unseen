@@ -1167,6 +1167,7 @@ async function loadUserMessages(userId) {
   try {
     console.log('🔍 جلب رسائل المستخدم:', userId);
     
+    // الآن بعد إنشاء الفهرس، يمكننا استخدام orderBy و limit
     const messagesSnapshot = await db.collection('messages')
       .where('recipientId', '==', userId)
       .orderBy('createdAt', 'desc')
@@ -1174,7 +1175,6 @@ async function loadUserMessages(userId) {
       .get();
     
     console.log('📨 عدد الرسائل المستلمة:', messagesSnapshot.size);
- 
     if (messagesSnapshot.empty) {
       console.log('📭 لا توجد رسائل للمستخدم');
       noMessages.style.display = 'block';
@@ -1186,23 +1186,21 @@ async function loadUserMessages(userId) {
     noMessages.style.display = 'none';
     messageList.innerHTML = '';
     
-messagesSnapshot.forEach(doc => {
+    messagesSnapshot.forEach(doc => {
       const message = doc.data();
       console.log('📝 رسالة:', message);
-      
       let messageDate;
       if (message.createdAt && message.createdAt.toDate) {
         messageDate = message.createdAt.toDate();
       } else {
         messageDate = new Date();
       }
-
-const formattedDate = messageDate.toLocaleDateString('ar-AR', {
+      
+      const formattedDate = messageDate.toLocaleDateString('ar-AR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
-      
       const messageItem = document.createElement('div');
       messageItem.className = 'message-item';
       messageItem.innerHTML = `
@@ -1212,12 +1210,12 @@ const formattedDate = messageDate.toLocaleDateString('ar-AR', {
           <span>مجهول</span>
         </div>
       `;
-  messageList.appendChild(messageItem);
+      messageList.appendChild(messageItem);
     });
     
     document.getElementById('messages-count').textContent = messagesSnapshot.size;
     console.log('✅ تم تحميل الرسائل بنجاح');
-    
+        
   } catch (error) {
     console.error('❌ خطأ في تحميل الرسائل:', error);
     noMessages.style.display = 'block';
