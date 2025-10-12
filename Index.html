@@ -896,7 +896,7 @@ console.log('✅ مستخدم جديد تم إنشاؤه');
 async function updateProfileLink(user) {
   try {
     const username = await ensureUsername(user);
-    const profileUrl = `${window.location.origin}/SendMessage.html?u=${encodeURIComponent(username)}`;
+  const profileUrl = `${window.location.origin}/SendMessage.html?u=${user.id}`;
     
     // تحديث النص الظاهر
     profileLinkText.textContent = `unseen.app/u/${username}`;
