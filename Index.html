@@ -689,6 +689,29 @@
     });
 
 // دالة ensureUsername لإنشاء أو جلب اسم المستخدم
+ async function ensureUsername(user) {
+  try {
+    const userDoc = await db.collection('users').doc(user.id).get();
+    if (userDoc.exists) {
+      return userDoc.data().username || user.id;
+    } else {
+      // إنشاء مستند مستخدم جديد مع اسم مستخدم
+      const username = user.email ? user.email.split('@')[0] : 'user' + user.id.slice(0, 6);
+      await db.collection('users').doc(user.id).set({
+        uid: user.id,
+        username: username,
+        email: user.email || null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        isAdmin: false
+      });
+      return username;
+    }
+  } catch (error) {
+    console.error('Error ensuring username:', error);
+    return user.id;
+  }
+}
+    //داله ensureUserDoc
     async function ensureUserDoc(user) {
   const docRef = db.collection('users').doc(user.id);
   const doc = await docRef.get();
