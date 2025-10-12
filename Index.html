@@ -60,8 +60,36 @@
 
     /* Mobile menu */
     .hamburger{display:none;background:none;border:none;font-size:22px}
-    .mobile-nav{display:none;position:absolute;right:16px;left:16px;top:72px;background:var(--bg);border-radius:12px;padding:12px;box-shadow:0 6px 24px rgba(8,16,41,0.08);z-index:50}
 
+.mobile-nav{
+  display:none;
+  position:absolute;
+  right:16px;
+  left:16px;
+  top:72px;
+  background:var(--bg);
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 6px 24px rgba(8,16,41,0.08);
+  z-index:50
+}
+    
+.mobile-nav a{
+  color:var(--primary);
+  text-decoration:none;
+  padding:12px 16px;
+  border-radius:10px;
+  font-weight:600;
+  display:block;
+  margin-bottom:4px;
+  transition:background-color 0.2s;
+  border-bottom:2px solid transparent;
+}
+
+.mobile-nav a:hover{
+  background:rgba(90,63,255,0.08);
+  border-bottom-color:var(--primary);
+}
     .hero{padding:48px 20px;text-align:center}
     .hero-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
     .eyebrow{display:inline-block;background:rgba(90,63,255,0.08);color:var(--primary);padding:6px 10px;border-radius:999px;font-weight:700}
@@ -206,7 +234,7 @@
     <div class="controls">
       <button class="icon-btn" id="lang-toggle" title="تبديل اللغة"><span class="material-icons">translate</span></button>
       <button class="icon-btn" id="theme-toggle" title="تبديل الثيم"><span class="material-icons">dark_mode</span></button>
-      <button class="icon-btn" id="profile-copy" title="انسخ رابط ملفك"><span class="material-icons">link</span></button>
+      <button class="icon-btn" id="start-now-btn" title="ابدأ الآن"><span class="material-icons">rocket_launch</span></button>
 
       <!-- Netlify auth controls -->
       <button class="icon-btn" id="auth-btn" title="تسجيل/حساب"><span class="material-icons">person</span></button>
@@ -366,7 +394,10 @@
     <div class="modal" id="contact-modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-title">
         <h3 id="contact-title">تواصل معنا</h3>
-        <form id="contact-form">
+        <form id="contact-form" action="https://formsubmit.co/your-email@example.com" method="POST">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="_subject" value="رسالة جديدة من Unseen">
+  <input type="hidden" name="_template" value="table">
           <div class="form-group">
             <label for="name">الاسم</label>
             <input id="name" name="name" placeholder="اسمك" required>
@@ -745,20 +776,7 @@
       }
     }
     
-    // Admin panel functions
-    adminBtn.addEventListener('click', () => {
-      adminPanel.classList.add('open');
-      loadAdminData();
-    });
-    
-    closeAdminPanel.addEventListener('click', () => {
-      adminPanel.classList.remove('open');
-    });
-    
-    async function loadAdminData() {
-      const user = netlifyIdentity.currentUser();
-      if (!user) return;
-      
+
       // التحقق من صلاحية المستخدم كمسؤول
       try {
         const userDoc = await db.collection('users').doc(user.id).get();
@@ -885,26 +903,7 @@ console.log('✅ مستخدم جديد تم إنشاؤه');
       }
     });
 
-    // Contact form saving to Firestore
-    contactForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const message = document.getElementById('message').value.trim();
-      const user = netlifyIdentity.currentUser();
-      try{
-        await db.collection('contacts').add({
-          name, email, message,
-          senderUid: user ? user.id : null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast(texts[currentLang].messageSent);
-        closeModalFn();
-        contactForm.reset();
-      }catch(err){
-        showToast(texts[currentLang].sendError + err.message);
-      }
-    });
+    
 
     // CTA button: لو فيه حساب يوجه المستخدم لإعداد ملفه أو رابط استلام الرسائل
     ctaBtn.addEventListener('click', async ()=>{
