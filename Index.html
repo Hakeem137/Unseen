@@ -185,6 +185,29 @@
       .mobile-nav{display:none}
       .admin-panel{width:100%}
     }
+    #privacy-modal .modal-card {
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+    
+#reject-terms {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+#reject-terms:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
   </style>
 </head>
 <body>
@@ -1050,9 +1073,100 @@ async function updateProfileLink(user) {
       }, 500);
     }
   });
+    // إضافة هذا الكود داخل الـ script الموجود
+document.addEventListener('DOMContentLoaded', function() {
+  const privacyModal = document.getElementById('privacy-modal');
+  const acceptBtn = document.getElementById('accept-terms');
+  const rejectBtn = document.getElementById('reject-terms');
+  
+  // التحقق إذا كان المستخدم وافق مسبقًا
+  const hasAccepted = localStorage.getItem('privacyTermsAccepted');
+  
+  if (!hasAccepted) {
+    // إظهار النافذة إذا لم يوافق مسبقًا
+    privacyModal.style.display = 'grid';
+    document.body.style.overflow = 'hidden'; // منع التمرير
+  }
+  // عند الموافقة على الشروط
+  acceptBtn.addEventListener('click', function() {
+    localStorage.setItem('privacyTermsAccepted', 'true');
+    privacyModal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // إعادة التمرير
+    showToast(currentLang === 'ar' ? 'شكرًا لك! تم حفظ تفضيلاتك' : 'Thank you! Your preferences have been saved');
+  });
+
+  // عند رفض الشروط
+  rejectBtn.addEventListener('click', function() {
+    if (confirm(currentLang === 'ar' ? 'للاستمرار في استخدام الموقع يجب الموافقة على الشروط. هل تريد المغادرة؟' : 'To continue using the site, you must accept the terms. Do you want to leave?')) {
+      window.location.href = 'https://google.com'; // أو أي صفحة أخرى
+    }
+  });
+    // إغلاق النافذة عند النقر خارجها
+  privacyModal.addEventListener('click', function(e) {
+    if (e.target === privacyModal) {
+      // لا نسمح بالإغلاق بالنقر خارج النافذة - يجب الاختيار
+      showToast(currentLang === 'ar' ? 'يرجى الموافقة على الشروط للمتابعة' : 'Please accept the terms to continue');
+    }
+  });
+});
 </script>
 
-  
+<!-- سياسة الخصوصية والشروط -->
+<div class="modal" id="privacy-modal" aria-hidden="false" style="display: grid;">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacy-title" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span class="material-icons" style="font-size: 48px; color: var(--primary); margin-bottom: 10px;">privacy_tip</span>
+      <h3 id="privacy-title" style="margin: 0 0 8px 0;">مرحبًا بك في Unseen</h3>
+      <p class="muted" style="margin: 0;">نحن نحرص على خصوصيتك وأمانك</p>
+    </div>
+        <div style="margin-bottom: 20px;">
+      <div class="card" style="margin-bottom: 12px; background: rgba(90, 63, 255, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: var(--accent); font-size: 20px;">visibility_off</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">الرسائل مجهولة الهوية</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">نحن لا نكشف هوية المرسلين، وبياناتك محمية بشكل آمن.</p>
+          </div>
+        </div>
+      </div>
+       <div class="card" style="margin-bottom: 12px; background: rgba(6, 182, 212, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: var(--primary); font-size: 20px;">gpp_good</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">خصوصية تامة</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">بياناتك الشخصية في أمان ولا نشاركها مع أي طرف ثالث.</p>
+          </div>
+        </div>
+      </div>
+               <div class="card" style="margin-bottom: 12px; background: rgba(239, 68, 68, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: #ef4444; font-size: 20px;">block</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">ممنوع المحتوى المسيء</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">يمنع إرسال أي محتوى به إيحاءات أو ألفاظ خادشة للحياء.</p>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <div style="background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+      <h4 style="margin: 0 0 10px 0; font-size: 1rem;">شروط الاستخدام:</h4>
+      <ul class="muted" style="margin: 0; padding-right: 15px; font-size: 0.9rem; line-height: 1.5;">
+        <li>الرسائل المرسلة تكون مجهولة المصدر</li>
+        <li>يمنع استخدام المنصة للإساءة أو المضايقة</li>
+        <li>يحق للإدارة حظر أي مستخدم يخالف الشروط</li>
+        <li>بيانات المستخدم محمية ولا تشارك مع آخرين</li>
+      </ul>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: space-between;">
+      <button type="button" class="btn btn-ghost" id="reject-terms" style="flex: 1;">رفض</button>
+      <button type="button" class="btn btn-primary" id="accept-terms" style="flex: 1;">موافق على الشروط</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 15px;">
+      <p class="muted" style="font-size: 0.8rem; margin: 0;">بالاستمرار أنت توافق على <a href="#" style="color: var(--primary);">سياسة الخصوصية</a> و<a href="#" style="color: var(--primary);">شروط الاستخدام</a></p>
+    </div>
+  </div>
+</div>
 </body>
   
 </html>
