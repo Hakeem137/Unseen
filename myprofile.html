@@ -650,31 +650,36 @@
     </div>
     
     <!-- Error State -->
+  
     <div id="error-state" class="error-container" style="display: none;">
-      <h3>حدث خطأ في تحميل البيانات</h3>
-      <p id="error-message">تعذر تحميل بيانات الملف الشخصي. يرجى المحاولة مرة أخرى.</p>
-      
-      <div class="permission-help" id="permission-help" style="display: none;">
-        <h4>مشكلة في الصلاحيات</h4>
-        <p>يبدو أن هناك مشكلة في صلاحيات الوصول إلى البيانات. قد يكون ذلك بسبب:</p>
-        <ul>
-          <li>عدم تسجيل الدخول بشكل صحيح</li>
-          <li>عدم وجود صلاحيات كافية للوصول إلى البيانات</li>
-          <li>مشكلة في تكوين قاعدة البيانات</li>
-        </ul>
-        <p>يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني إذا استمرت المشكلة.</p>
-      </div>
-      
-      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-        <button class="btn btn-primary retry-button" id="retry-button">
-          <span class="material-icons">refresh</span> إعادة المحاولة
-        </button>
-        <button class="btn btn-outline retry-button" id="refresh-button">
-          <span class="material-icons">refresh</span> تحديث الصفحة
-        </button>
-      </div>
-    </div>
+  <h3>حدث خطأ في تحميل البيانات</h3>
+  <p id="error-message">تعذر تحميل بيانات الملف الشخصي. يرجى المحاولة مرة أخرى.</p>
+  
+  <div class="permission-help" id="permission-help" style="display: none;">
+    <h4>مشكلة في الصلاحيات</h4>
+    <p>يبدو أن هناك مشكلة في صلاحيات الوصول إلى البيانات. قد يكون ذلك بسبب:</p>
+    <ul>
+      <li>عدم تسجيل الدخول بشكل صحيح</li>
+      <li>عدم وجود صلاحيات كافية للوصول إلى البيانات</li>
+      <li>مشكلة في تكوين قاعدة البيانات</li>
+    </ul>
+    <p>يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني إذا استمرت المشكلة.</p>
+  </div>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+    <button class="btn btn-primary retry-button" id="retry-button">
+      <span class="material-icons">refresh</span> إعادة المحاولة
+    </button>
+    <button class="btn btn-outline retry-button" id="refresh-button">
+      <span class="material-icons">refresh</span> تحديث الصفحة
+    </button>
+  </div>
+</div>
     
+<!-- حالة عدم وجود بيانات -->
+<div id="no-data-state" class="loading-container" style="display: none;">
+  <div class="spinner"></div>
+  <p>جاري إنشاء ملفك الشخصي لأول مرة...</p>
+</div>
     <!-- Profile Content (hidden initially) -->
     <section class="profile-section" id="profile-content" style="display: none;">
       <div class="profile-header">
@@ -947,7 +952,11 @@
 
     // بيانات المستخدم
     let currentUser = null;
-    let selectedAvatarFile = null;
+let selectedAvatarFile = null;
+
+// إعادة المحاولة التلقائية
+let retryCount = 0;
+const maxRetries = 3;
 
     // فحص حالة الاتصال بالإنترنت
     function checkOnlineStatus() {
@@ -1452,12 +1461,16 @@ async function createUserDocument(user) {
       loginBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
     }
+    
 function showNoDataState() {
   loadingState.style.display = 'none';
   errorState.style.display = 'none';
   profileContent.style.display = 'none';
   loginPrompt.style.display = 'none';
-  document.getElementById('no-data-state').style.display = 'block';
+  const noDataState = document.getElementById('no-data-state');
+  if (noDataState) {
+    noDataState.style.display = 'flex';
+  }
 }
     
     function showToast(message, type = 'success') {
@@ -1471,6 +1484,21 @@ function showNoDataState() {
       }, 3000);
     }
 
+    // إعادة المحاولة التلقائية
+function autoRetryLoadUser() {
+  if (retryCount < maxRetries && currentUser) {
+    retryCount++;
+    console.log(`🔄 إعادة المحاولة التلقائية (${retryCount}/${maxRetries})`);
+    showToast(`جاري إعادة تحميل البيانات... (${retryCount}/${maxRetries})`, 'success');
+    loadUserData(currentUser);
+  }
+}
+    // إعادة المحاولة كل 5 ثواني
+setInterval(() => {
+  if (currentUser && document.getElementById('loading-state').style.display === 'flex') {
+    autoRetryLoadUser();
+  }
+}, 5000);
     // Event Listeners
     loginBtn.addEventListener('click', () => {
       netlifyIdentity.open();
@@ -1628,24 +1656,7 @@ function showNoDataState() {
     document.addEventListener('DOMContentLoaded', () => {
       initNetlifyIdentity();
     });
-    // إعادة المحاولة التلقائية
-let retryCount = 0;
-const maxRetries = 3;
 
-function autoRetryLoadUser() {
-  if (retryCount < maxRetries && currentUser) {
-    retryCount++;
-    console.log(`🔄 إعادة المحاولة التلقائية (${retryCount}/${maxRetries})`);
-    showToast(`جاري إعادة تحميل البيانات... (${retryCount}/${maxRetries})`, 'success');
-    loadUserData(currentUser);
-  }
-}
-    // إعادة المحاولة كل 5 ثواني
-setInterval(() => {
-  if (currentUser && document.getElementById('loading-state').style.display === 'flex') {
-    autoRetryLoadUser();
-  }
-}, 5000);
   </script>
 </body>
 </html>
