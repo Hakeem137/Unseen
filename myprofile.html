@@ -599,6 +599,12 @@
     .connection-status.offline {
       background: var(--danger);
     }
+    
+    .no-data-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
   </style>
 </head>
 <body>
@@ -1061,7 +1067,19 @@ async function handleAuthState(user) {
 
     // تحميل بيانات المستخدم  
      async function loadUserData(user) {
-  try {
+ // تحقق إضافي من اتصال Firebase
+  if (!db) {
+    console.error('❌ Firebase غير مهيئ');
+    showErrorState('خطأ في اتصال قاعدة البيانات');
+    return;
+  }
+    // تحقق من وجود المستخدم
+  if (!user || !user.id) {
+    console.error('❌ بيانات المستخدم غير صالحة');
+    showErrorState('بيانات المستخدم غير صالحة');
+    return;
+  }
+       try {
     showLoadingState();
     
     console.log('🔍 جلب بيانات المستخدم:', user.id);
