@@ -1060,8 +1060,8 @@ async function handleAuthState(user) {
     if (!db) {
       throw new Error('Firebase not initialized');
     }
-          
-   // محاولة مع timeout و retry
+    
+// محاولة مع timeout و retry
     let userDoc;
     let retries = 3;
     
@@ -1071,8 +1071,7 @@ async function handleAuthState(user) {
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('انتهت مدة الانتظار')), 5000);
         });
-        
-        userDoc = await Promise.race([userDocPromise, timeoutPromise]);
+    userDoc = await Promise.race([userDocPromise, timeoutPromise]);
         break;
       } catch (error) {
         retries--;
@@ -1081,7 +1080,7 @@ async function handleAuthState(user) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-        if (userDoc.exists) {
+      if (userDoc.exists) {
       const userData = userDoc.data();
       console.log('✅ تم العثور على بيانات المستخدم:', userData);
       
@@ -1098,15 +1097,17 @@ async function handleAuthState(user) {
       showProfileContent();
       showToast('تم إنشاء ملفك الشخصي بنجاح', 'success');
     }
-            } catch (error) {
+         } catch (error) {
     console.error('❌ خطأ في تحميل البيانات:', error);
     handleDataLoadError(error, user);
   }
 }
-    // معالجة الأخطاء المحسنة
+
+// معالجة الأخطاء المحسنة
 function handleDataLoadError(error, user) {
   if (error.code === 'unavailable' || error.message === 'انتهت مدة الانتظار') {
-    // استخدام البيانات المخزنة محلياً
+    showErrorState('⚠️ لا يوجد اتصال بالإنترنت. جاري استخدام البيانات المخزنة محلياً...', false); 
+      // محاولة استخدام البيانات المخزنة محلياً
     try {
       const cachedUserData = localStorage.getItem(`user_${user.id}`);
       if (cachedUserData) {
@@ -1117,7 +1118,7 @@ function handleDataLoadError(error, user) {
       } else {
         showErrorState('لا يوجد اتصال بالإنترنت. يرجى المحاولة لاحقاً.');
       }
-    } catch (cacheError) {
+          } catch (cacheError) {
       showErrorState('تعذر تحميل البيانات. تأكد من اتصالك بالإنترنت.');
     }
   } else if (error.code === 'permission-denied') {
@@ -1126,6 +1127,7 @@ function handleDataLoadError(error, user) {
     showErrorState('حدث خطأ في تحميل البيانات: ' + error.message);
   }
 }
+    
     // إنشاء مستند مستخدم جديد
 async function createUserDocument(user) {
   try {
