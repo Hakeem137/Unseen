@@ -580,7 +580,7 @@
                 <span class="material-icons">visibility_off</span>
                 Unseen
             </div>
-            <div class="tagline">أرسل رسالة مجهولة إلى Mozi</div>
+            <div class="tagline">أرسل رسالة مجهولة إلى <span id="recipientName">Mozi</span></div>
             <div class="subtitle">لا أحد سيعرف أنك من أرسلها • مرفقات متعددة • تشفير متقدم</div>
         </div>
         
@@ -592,7 +592,7 @@
                         إلى
                     </label>
                     <div class="recipient-container">
-                        <div class="recipient-avatar">M</div>
+                        <div class="recipient-avatar" id="recipientAvatar">M</div>
                         <input type="text" id="recipient" value="Mozi" readonly>
                     </div>
                 </div>
@@ -765,6 +765,14 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+    const userName = urlParams.get('name') || 'Mozi';
+
+    // تحديث الاسم في كل الأماكن
+    document.getElementById('recipientName').textContent = userName;
+    document.getElementById('recipient').value = userName;
+    document.getElementById('recipientAvatar').textContent = userName.charAt(0).toUpperCase();
+    
             const messageField = document.getElementById("message");
             messageField.addEventListener("input", updateCharCount);
             
@@ -881,11 +889,10 @@
         const charCount = document.getElementById("charCount");
         const attachmentInput = document.getElementById('attachment');
         const params = new URLSearchParams(window.location.search);
-        const recipientId = params.get("u");
-
-        if (!recipientId) {
-            alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
-        }
+        const recipientId = urlParams.get("u");
+if (!recipientId) {
+    alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
+}
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
