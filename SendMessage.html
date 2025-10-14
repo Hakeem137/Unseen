@@ -888,8 +888,8 @@
         const messageField = document.getElementById("message");
         const charCount = document.getElementById("charCount");
         const attachmentInput = document.getElementById('attachment');
-        const params = new URLSearchParams(window.location.search);
-        const recipientId = urlParams.get("u");
+        const urlParams = new URLSearchParams(window.location.search);
+const recipientId = urlParams.get("u");
 if (!recipientId) {
     alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
 }
