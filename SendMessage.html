@@ -785,7 +785,7 @@
         
         if (userDoc.exists()) {
             const userData = userDoc.data();
-            const userName = userData.displayName || userData.name || "مستخدم";
+            const userName = userData.username || userData.displayName || userData.name || "مستخدم";
             // تحديث الاسم في كل الأماكن
             document.getElementById('recipientName').textContent = userName;
             document.getElementById('recipient').value = userName;
