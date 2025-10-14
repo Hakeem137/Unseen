@@ -764,14 +764,39 @@
             charCount.textContent = messageField.value.length;
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-    const userName = urlParams.get('name') || 'Mozi';
+        document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipientId = urlParams.get('u');
 
-    // تحديث الاسم في كل الأماكن
-    document.getElementById('recipientName').textContent = userName;
-    document.getElementById('recipient').value = userName;
-    document.getElementById('recipientAvatar').textContent = userName.charAt(0).toUpperCase();
+    if (!recipientId) {
+        alert("❌ الرابط لا يحتوي على معرف المستخدم (u=)");
+        return;
+    }
+
+    try {
+        // استيراد الدوال المطلوبة
+        const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js");
+        const { app } = await import("./firebase-init.js");
+        
+        const db = getFirestore(app);
+        
+        // جلب بيانات المستخدم من Firebase
+        const userDoc = await getDoc(doc(db, "users", recipientId));
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const userName = userData.displayName || userData.name || "مستخدم";
+            // تحديث الاسم في كل الأماكن
+            document.getElementById('recipientName').textContent = userName;
+            document.getElementById('recipient').value = userName;
+            document.getElementById('recipientAvatar').textContent = userName.charAt(0).toUpperCase();
+        } else {
+            alert("❌ المستخدم غير موجود");
+        }
+    } catch (error) {
+        console.error("❌ خطأ في جلب بيانات المستخدم:", error);
+        alert("حدث خطأ في تحميل بيانات المستخدم");
+    }
     
             const messageField = document.getElementById("message");
             messageField.addEventListener("input", updateCharCount);
